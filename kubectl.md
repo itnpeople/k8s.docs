@@ -1,6 +1,7 @@
 # kubectl 활용
 
-## 테스트용 POD
+
+##  테스트용 Pod
 
 * BusyBox
 ~~~
@@ -22,26 +23,6 @@ spec:
 
 ~~~
 ▒ kubectl exec -n default -ti busybox -- nslookup kubernetes.default
-~~~
-
-* HTTPBin
-~~~
-apiVersion: v1
-kind: Pod
-metadata:
-  name: httpbin
-  labels:
-    app: httpbin
-spec:
-  containers:
-  - image: docker.io/honester/httpbin:latest
-    imagePullPolicy: IfNotPresent
-    name: httpbin
-~~~
-
-~~~
-▒ do kubectl exec -it httpbin -c httpbin -- curl http://svc-hello.default:8080;
-▒ for i in {1..20}; do kubectl exec -it httpbin -c httpbin -- curl http://svc-hello.default:8080; sleep 0.1; done
 ~~~
 
 
@@ -116,6 +97,20 @@ spec:
 ▒ curl --cacert ca.crt -H "Authorization: Bearer $TOKEN" https://101.55.69.109:6443/api/v1/namespaces/default/pods
 ~~~
 
+## 디버깅
 
-curl --cacert ca.crt -H "Authorization: Bearer $TOKEN" https://101.55.69.109:6443/api/v1/namespaces/default/pods
-curl --insecure -H "Authorization: Bearer $TOKEN" https://101.55.69.109:6443/api/v1/namespaces/default/pods
+~~~
+▒ kubectl get pods --v=7
+~~~
+
+~~~
+--v=0	일반적으로 클러스터 운영자(operator)에게 항상 보여지게 하기에는 유용함.
+--v=1	자세한 정보를 원하지 않는 경우, 적절한 기본 로그 수준.
+--v=2	서비스와 시스템의 중요한 변화와 관련이있는 중요한 로그 메시지에 대한 유용한 정상 상태 정보. 이는 대부분의 시스템에서 권장되는 기본 로그 수준이다.
+--v=3	변경 사항에 대한 확장 정보.
+--v=4	디버그 수준 상세화.
+--v=6	요청한 리소스를 표시.
+--v=7	HTTP 요청 헤더를 표시.
+--v=8	HTTP 요청 내용을 표시.
+--v=9	내용을 잘라 내지 않고 HTTP 요청 내용을 표시.
+~~~
