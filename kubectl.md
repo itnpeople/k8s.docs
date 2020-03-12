@@ -1,31 +1,5 @@
 # kubectl 활용
 
-
-##  테스트용 Pod
-
-* BusyBox
-~~~
-apiVersion: v1
-kind: Pod
-metadata:
-  name: busybox
-  namespace: default
-spec:
-  containers:
-  - name: busybox
-    image: busybox:1.28
-    command:
-      - sleep
-      - "3600"
-    imagePullPolicy: IfNotPresent
-  restartPolicy: Always
-~~~
-
-~~~
-▒ kubectl exec -n default -ti busybox -- nslookup kubernetes.default
-~~~
-
-
 ## POD
 
 * 라벨로 파드명 조회
@@ -54,7 +28,7 @@ spec:
 
 ## Port Forward
 
-* 예
+* service 포트 포워딩
 ~~~
 ▒ kubectl port-forward svc/productpage -n default 9080                                         # 일반
 ▒ kubectl port-forward --context acorn-rnd svc/productpage -n default 9080                     # Context 지정
@@ -63,7 +37,12 @@ spec:
 ▒ kubectl port-forward --context acorn-rnd svc/productpage -n default 9080 > /dev/null 2>&1 &  # 출력 & 에러 + 데몬
 ~~~
 
-* 어플리케이션별
+* pod 포트 포워딩
+~~~
+▒ kubectl port-forward $(kubectl get pod -l app=httpbin -o jsonpath={.items..metadata.name}) 8080:80
+~~~
+
+* 어플리케이션별 포트 포워딩 예제
 ~~~
 ▒ kubectl -n istio-system port-forward $(kubectl -n istio-system get pod -l app=prometheus -o jsonpath='{.items[0].metadata.name}') 9090:9090   # Prometheus
 ▒ kubectl -n istio-system port-forward $(kubectl -n istio-system get pod -l app=kiali -o jsonpath='{.items[0].metadata.name}') 20001:20001      # Kiali
@@ -97,20 +76,44 @@ spec:
 ▒ curl --cacert ca.crt -H "Authorization: Bearer $TOKEN" https://101.55.69.109:6443/api/v1/namespaces/default/pods
 ~~~
 
-## 디버깅
+## Dashboard
+
+* Dashboard 배포
 
 ~~~
-▒ kubectl get pods --v=7
+▒ kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta8/aio/deploy/recommended.yaml
 ~~~
 
+* Dashboard Service Account `kubernetes-dashboard` 에 cluster-admin 권한 지정
+
 ~~~
---v=0	일반적으로 클러스터 운영자(operator)에게 항상 보여지게 하기에는 유용함.
---v=1	자세한 정보를 원하지 않는 경우, 적절한 기본 로그 수준.
---v=2	서비스와 시스템의 중요한 변화와 관련이있는 중요한 로그 메시지에 대한 유용한 정상 상태 정보. 이는 대부분의 시스템에서 권장되는 기본 로그 수준이다.
---v=3	변경 사항에 대한 확장 정보.
---v=4	디버그 수준 상세화.
---v=6	요청한 리소스를 표시.
---v=7	HTTP 요청 헤더를 표시.
---v=8	HTTP 요청 내용을 표시.
---v=9	내용을 잘라 내지 않고 HTTP 요청 내용을 표시.
+▒ kubectl apply -f - <<EOF
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: clusterrolebinding-kubernetes-dashboard
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: kubernetes-dashboard
+  namespace: kubernetes-dashboard
+EOF
+~~~
+
+* Dashboard 실행
+
+~~~
+▒ kubectl proxy
+~~~
+
+* 페이지 오픈 : http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/ 
+
+* 로그인 토큰 조회 & 조회된 token 으로 로그인
+
+~~~
+▒ TOKEN=$(kubectl get secret -n kubernetes-dashboard $(kubectl get sa kubernetes-dashboard -n kubernetes-dashboard -o jsonpath={.secrets..name} | cut -f1 -d ' ') -o jsonpath='{$.data.token}' | base64 --decode)
+▒ echo $TOKEN
 ~~~

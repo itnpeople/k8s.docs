@@ -30,29 +30,8 @@
 
 * 프로메테우스 신규 설치 하지 않고 다른 프로메테우스 사용
   * `--set prometheus.enabled=false`
-  * `--set prometheusAddr=http://prometheus.cocktail-addon.svc.cluster.local:8`
+  * `--set prometheusAddr=http://prometheus.cocktail-addon.svc.cluster.local:80`
 
-
-
-## Kiali 로그인 계정 생성
-
-~~~
-▒ KIALI_USERNAME=$(echo -n 'admin' | base64)
-▒ KIALI_PASSPHRASE=$(echo -n 'admin' | base64)
-▒ kubectl apply -f - <<EOF
-apiVersion: v1
-kind: Secret
-metadata:
-  name: kiali
-  namespace: istio-system
-  labels:
-    app: kiali
-type: Opaque
-data:
-  username: $KIALI_USERNAME
-  passphrase: $KIALI_PASSPHRASE
-EOF
-~~~
 
 
 ### external 프로메테우스 사용시
