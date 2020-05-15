@@ -1,6 +1,8 @@
 # Git
 
-## GitHub SSH 다중 계정 관리
+## GitHub SSH 다중 계정 관리 (macOS)
+git에서 게정별로 구분하는 방법이 없어 `ssh-agent` 를 활용을 통해 가능
+
 
 * 새로운 키 생성
 ```
@@ -88,4 +90,5 @@ git push -u origin master
 
 ### 참고
 * [How to manage multiple GitHub accounts on a single machine with SSH keys](https://www.freecodecamp.org/news/manage-multiple-github-accounts-the-ssh-way-2dadc30ccaca/)
+* [Github 다수 계정을 위한 SSH Key 설정](https://mygumi.tistory.com/96)
 * [Mac 에서 ssh-agent 사용하기](https://blog.munilive.com/using-ssh-agent-on-mac-os/)
