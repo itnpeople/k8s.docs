@@ -26,6 +26,13 @@
 ▒ kubectl rollout status -w deployment/frontend                    # 완료될 때까지 "frontend" 디플로이먼트의 롤링 업데이트 상태를 감시
 ~~~
 
+## jsonpath
+
+~~~
+▒ kubectl get pod -l app.kubernetes.io/name=backend -o jsonpath={.items..metadata.name}  # simple
+▒ kubectl get svc/frontend -o jsonpath='{.spec.ports[?(@.name=="http")].nodePort}'       # 조건 (nodeport 조회)
+~~~
+
 ## Port Forward
 
 * service 포트 포워딩

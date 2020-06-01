@@ -4,14 +4,6 @@
 
 
 
-* Dockerfile
-~~~
-FROM kennethreitz/httpbin:latest
-
-RUN apt-get update
-RUN apt-get install curl iputils-ping-y
-~~~
-
 * docker 빌드
 ~~~
 ▒ docker build -t honester/httpbin:latest .
@@ -50,6 +42,15 @@ spec:
 ▒ kubectl exec -it httpbin -- dig productpage.default.svc.cluster.local
 ▒ kubectl exec -it httpbin -- dig @8.8.8.8 google.com              # 특정 네임서버로 조회
 ~~~
+
+* 리모트 도메인 포트 점검
+~~~
+▒ kubectl exec -it httpbin -- nslookup productpage.default.svc.cluster.local  # 도메인 점검
+▒ kubectl exec -it httpbin -- nmap 10.104.100.127 -p 2379                     # 리모트 포트 점검
+▒ kubectl exec -it httpbin -- nc -z daum.net  80                              # 리모트 포트 점검
+~~~
+
+
 
 ## 배포
 

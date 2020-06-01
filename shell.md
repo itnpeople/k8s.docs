@@ -25,12 +25,25 @@
 ▒ nslookup redhat.com 8.8.8.8 # 특정 DNS (8.8.8.8 google)를 사용하여 도메인 검색
 ~~~
 
-### nc (network cat)
+### [원격서버 포트 점검](https://zetawiki.com/wiki/리눅스_원격서버_포트_점검)
+  * nc (network cat)
+
+~~~
+# network cat
+▒ nc -z 8.8.8.8 53
+
+# nmap
+▒ nmap localhost
+▒ nmap ko.wikipedia.org -p 80
+~~~
+
+### nmap (network cat)
   * [원격서버 포트 점검](https://zetawiki.com/wiki/리눅스_원격서버_포트_점검)
 
 ~~~
 ▒ nc -z 8.8.8.8 53
 ~~~
+
 
 ### 로컬 포트 확인 ([losf](https://zetawiki.com/wiki/리눅스_lsof), [netstat](https://zetawiki.com/wiki/리눅스_netstat))
 
@@ -39,7 +52,7 @@
 ▒ netstat -tnlp
 ~~~
 
-### 퍼블릭 아이피 얻기 ([dig](https://zetawiki.com/wiki/리눅스_dig)
+### 퍼블릭 아이피 얻기 ([dig](https://zetawiki.com/wiki/리눅스_dig))
 
 ~~~
 # yum install -y bind-utils
