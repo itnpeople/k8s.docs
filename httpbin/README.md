@@ -112,3 +112,16 @@ spec:
     - protocol: TCP
       port: 80
 ```
+
+## 성능
+
+### iperf3
+
+```
+# server
+▒ kubectl exec -it httpbin-master -- ipref3 -s
+
+# client (동시연결 30)
+▒ kubectl exec -it httpbin-worker-1 -- iperf3 -P 30 -c httpbin-master
+```
+

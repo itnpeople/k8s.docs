@@ -26,6 +26,12 @@
 ▒ kubectl rollout status -w deployment/frontend                    # 완료될 때까지 "frontend" 디플로이먼트의 롤링 업데이트 상태를 감시
 ~~~
 
+## busybox
+
+~~~
+▒ kubectl run -it --rm --restart=Never busybox1 --image=busybox sh
+~~~
+
 ## jsonpath
 
 ~~~
