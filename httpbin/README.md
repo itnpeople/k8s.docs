@@ -3,27 +3,16 @@
 > [httpbin](https://hub.docker.com/r/kennethreitz/httpbin) 에 필요 유틸 추가
 
 
-
 * docker 빌드
 ~~~
 ▒ docker build -t honester/httpbin:latest .
 ▒ docker push honester/httpbin:latest
 ~~~
 
-
-* 배포
+* 실행(배포)
 ~~~
-apiVersion: v1
-kind: Pod
-metadata:
-  name: httpbin
-  labels:
-    app: httpbin
-spec:
-  containers:
-  - image: docker.io/honester/httpbin:latest
-    imagePullPolicy: Always #IfNotPresent
-    name: httpbin
+▒ kubectl run httpbin --image=honester/httpbin --restart=Never
+# --dry-run -o yaml
 ~~~
 
 
@@ -50,13 +39,36 @@ spec:
 ▒ kubectl exec -it httpbin -- nc -z daum.net  80                              # 리모트 포트 점검
 ~~~
 
+* iperf3
+
+~~~
+# server
+▒ kubectl exec -it httpbin-master -- ipref3 -s
+
+# client (동시연결 30)
+▒ kubectl exec -it httpbin-worker-1 -- iperf3 -P 30 -c httpbin-master
+~~~
 
 
-## 배포
+## yaml 예
+
+~~~
+apiVersion: v1
+kind: Pod
+metadata:
+  name: httpbin
+  labels:
+    app: httpbin
+spec:
+  containers:
+  - image: docker.io/honester/httpbin:latest
+    imagePullPolicy: Always #IfNotPresent
+    name: httpbin
+~~~
 
 * master node / worker node에 지정 배포
 
-```
+~~~
 ▒ kubectl apply -f - <<EOF
 apiVersion: v1
 kind: Pod
@@ -111,17 +123,4 @@ spec:
   ports:
     - protocol: TCP
       port: 80
-```
-
-## 성능
-
-### iperf3
-
-```
-# server
-▒ kubectl exec -it httpbin-master -- ipref3 -s
-
-# client (동시연결 30)
-▒ kubectl exec -it httpbin-worker-1 -- iperf3 -P 30 -c httpbin-master
-```
-
+~~~

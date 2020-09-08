@@ -92,3 +92,33 @@ git push -u origin master
 * [How to manage multiple GitHub accounts on a single machine with SSH keys](https://www.freecodecamp.org/news/manage-multiple-github-accounts-the-ssh-way-2dadc30ccaca/)
 * [Github 다수 계정을 위한 SSH Key 설정](https://mygumi.tistory.com/96)
 * [Mac 에서 ssh-agent 사용하기](https://blog.munilive.com/using-ssh-agent-on-mac-os/)
+
+
+## rebase
+
+* 커밋합치기 예
+
+~~~
+# HEAD 에서 이전 4개 commit 으로 rebase
+▒ git rebase -i HEAD~4
+
+# 2~4번 커밋을 1번 커밋에 squash 하고 저장
+
+pick 01d1124 Adding license
+squash 6340aaa Moving license into its own file
+squash ebfd367 Jekyll has become self-aware.
+squash 30e0ccb Changed the tagline in the binary, too.
+
+# push 
+▒ git push origin +master
+~~~
+
+## merge
+
+* Squashed branch merge (한 브랜치의 이력을 압축하여 다른 브랜치의 최신 커밋 하나로)
+
+```
+▒ git checkout master               # 머지하고자 하는 branch 로 HEAD 이동
+▒ git merge --squash feature/archi  # mater branch 로 feature/archi branch 를 merge
+▒ git commit -m 'Add ...'           # master branch 커밋
+```

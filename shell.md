@@ -3,23 +3,25 @@
 
 ## curl
 
-### HTTPS 요청 with 인증서
+* HTTPS 요청 with 인증서
 ~~~
 ▒ curl -HHost:httpbin.example.com --resolve httpbin.example.com:31390:192.168.0.99 --cacert httpbin.example.com/2_intermediate/certs/ca-chain.cert.pem https://httpbin.example.com:31390
 ~~~
 
-### 기타 사용법
+
+* 기타 사용법
 ~~~
 ▒ curl -s https://httpbin.org/headers -X GET                                     # http methods (GET,POST,PUT,DELETE)
 ▒ curl -s https://httpbin.org/headers -H "Header1:value1" -H "Header2:value2"    # add http header
 ▒ curl -s https://httpbin.org/headers -o /dev/null                               # output empty
 ▒ curl -s https://httpbin.org/headers -o /dev/null -w "code:%{http_code}";       # response code
+▒ curl -i https://httpbin.org/ip                                                 # -i : print with http-headers
 ~~~
 
 
 ## cut
 
-### `cut -f1 -d ' '` : ' ' 로 구분 했을 때 첫번째 컬럼
+* `cut -f1 -d ' '` : ' ' 로 구분 했을 때 첫번째 컬럼
 
 ~~~
 ▒ kubectl get secrets | grep default | cut -f1 -d ' '
@@ -32,43 +34,45 @@
 ▒ kubeadm token list | awk 'FNR==2 {print $1}'
 ```
 
-## 리눅스 네트워크 
 
-### nslookup
+## nslookup
 
 ~~~
 ▒ nslookup 209.132.183.181  # IP로 도메인 찾기
 ▒ nslookup redhat.com 8.8.8.8 # 특정 DNS (8.8.8.8 google)를 사용하여 도메인 검색
 ~~~
 
-### [원격서버 포트 점검](https://zetawiki.com/wiki/리눅스_원격서버_포트_점검)
-  * nc (network cat)
+## 원격서버 포트 점검
 
+* nc (network cat)
 ~~~
 # network cat
 ▒ nc -z 8.8.8.8 53
+~~~
 
+* nmap
+~~~
 # nmap
 ▒ nmap localhost
 ▒ nmap ko.wikipedia.org -p 80
 ~~~
 
-### nmap (network cat)
-  * [원격서버 포트 점검](https://zetawiki.com/wiki/리눅스_원격서버_포트_점검)
 
-~~~
-▒ nc -z 8.8.8.8 53
-~~~
+## 로컬 포트 확인 
 
-
-### 로컬 포트 확인 ([losf](https://zetawiki.com/wiki/리눅스_lsof), [netstat](https://zetawiki.com/wiki/리눅스_netstat))
-
+* [losf](https://zetawiki.com/wiki/리눅스_lsof)
 ~~~
 ▒ lsof -i -nP | grep LISTEN | awk '{print $(NF-1)" "$1}' | sort -u
+~~~
+
+* [netstat](https://zetawiki.com/wiki/리눅스_netstat))
+~~~
 ▒ netstat -tnlp
 ~~~
 
-### 퍼블릭 아이피 얻기 ([dig](https://zetawiki.com/wiki/리눅스_dig))
+## 퍼블릭 아이피 얻기
+
+* [dig](https://zetawiki.com/wiki/리눅스_dig))
 
 ~~~
 # yum install -y bind-utils
@@ -77,7 +81,7 @@
 ▒ curl ifconfig.me
 ~~~
 
-### ip addr, [ifconfig](https://zetawiki.com/wiki/리눅스_ifconfig)
+## ip addr, [ifconfig](https://zetawiki.com/wiki/리눅스_ifconfig)
 
 ~~~
 # yum install -y net-tools
@@ -92,11 +96,9 @@
 ▒ ip addr
 ~~~
 
-### IP Route
+## IP routing 조회
 
 ~~~
-# routing 조회
-
 ▒ route -n
 ▒ ip route
 ▒ netstat -rn
@@ -117,7 +119,6 @@
 ~~~
 
 
-
 ## 커널
 
 ~~~
@@ -125,9 +126,9 @@
 ▒ modprobe 8021q			# 커널에 vlan 모듈(8021q) 추가
 ~~~
 
-## 파일생성
+## 파일
 
-echo 명령으로 파일 만들기
+* echo 명령으로 파일 만들기
 ~~~
 ▒  echo -e "[Interface]
 Address = 10.66.66.1/24
@@ -135,12 +136,12 @@ ListenPort = 51820
 PrivateKey = $(sudo wg genkey)" | sudo tee /etc/wireguard/wg0.conf
 ~~~
 
-파일에 행 추가
+* 파일에 행 추가
 ~~~
 ▒  echo "set \$l7 ${COMMAND};" | sudo tee -a /usr/local/nginx/conf/nginx-test.conf"
 ~~~
 
-cat 으로 파일 생성 sudo
+* cat 으로 파일 생성 sudo
 ~~~
 ▒  sudo bash -c 'cat > /etc/docker/daemon.json <<EOF
 {
@@ -154,7 +155,7 @@ cat 으로 파일 생성 sudo
 EOF'
 ~~~
 
-cat 으로 파일 생성 sudo
+* cat 으로 파일 생성 sudo
 ~~~
 ▒ sudo cat <<EOF> /etc/docker/daemon.json
 {
@@ -171,12 +172,12 @@ EOF
 
 ## 기타
 
+* ubuntu 호스트명 변경
 ~~~
-▒  hostnamectl set-hostname "cb-k8s-master" && exec bash 	#  ubuntu 호스트명 변경
+▒  hostnamectl set-hostname "cb-k8s-master" && exec bash
 ~~~
 
 * 파일(gcp.key)을 라인별로 읽어서 "\n" 붙여 문자열로 만들기
-
 ~~~
 ▒ while read line; do
 	if [[ "$line" != "" ]]; then
@@ -194,4 +195,11 @@ done < "gcp.key"
 
 # 방법 2
 ▒ cat aaa.txt | while read line; do if [[ "$line" != "" ]]; then echo -n "$line\n";fi; done
+~~~
+
+* Linux `reboot` 명령이  hang 걸렸을 경우 대처 방법 [원본](https://unix.stackexchange.com/questions/442932/reboot-is-not-working)
+
+~~~
+▒ echo 1 > /proc/sys/kernel/sysrq
+▒ echo b > /proc/sysrq-trigger
 ~~~

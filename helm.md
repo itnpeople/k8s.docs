@@ -32,6 +32,22 @@ stable/gcloud-endpoints         0.1.2           1               DEPRECATED Devel
 ▒ helm list
 ```
 
+* repository 구성을 위한 index.yaml 생성 (github) - 현재 디렉터리에  tgz 파일 존재
+
+```
+# helm chart의 tgz 파일 생성 helm package
+▒ helm package [sample-chart]
+
+# index.yaml 생성
+▒ helm repo index --url "https://itnpeople.github.io/helmcharts" .
+
+# index.yaml, tgz 파일 push
+▒ git add .
+▒ git commit -m "first commit" 
+▒ git push origin master
+```
+
+
 ## development
 
 ```

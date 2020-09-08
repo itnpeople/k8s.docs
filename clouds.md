@@ -10,17 +10,25 @@
 ```
 
 
-### AMI
+* AMI
 
 ```
 ▒ aws ec2 describe-images
 ▒ aws ec2 describe-images --owners self amazon 
 
 #  현재 Amazon Linux 2 AMI 검색
-▒  aws ec2 describe-images --owners self amazon \
-    --filters 'Name=name,Values=amzn2-ami-hvm-2.0.????????.?-x86_64-gp2' 'Name=state,Values=available' \
+▒  aws ec2 describe-images --owners '099720109477' \
+    --filters 'Name=name,Values=ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*' 'Name=virtualization-type,Values=hvm' \
     --output text
+
+# 099720109477:Canonical
+▒  aws ec2 describe-images --owners '099720109477'\
+    --filters 'Name=name,Values=*ubuntu-bionic-18.04-amd64-server-*' \
+    --filters 'Name=virtualization-type,Values=hvm' \
+    --query 'reverse(sort_by(Images, &CreationDate))[:1].ImageId'
+
 ```
+
 
 
 ## google
