@@ -3,11 +3,30 @@
 
 ## kubeadm
 
+### join token 발생 및 commnad 출력
+
+```
+▒ kubeadm token create --print-join-command
+```
+
+### join token 조회/발생 및 수동으로 commnad 출력
+
+```
+END_POINT="$(hostname -i):6443"
+TOKEN="$(sudo kubeadm token list | tail -n 1 | awk '{print $1}')"
+if [ "${TOKEN}" == "TOKEN" ]; then
+	TOKEN="$(sudo kubeadm token create)"
+fi
+HASH=$(openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //')
+echo "sudo kubeadm join ${END_POINT} --token ${TOKEN} --discovery-token-ca-cert-hash sha256:${HASH}"
+```
+
+
 ### token
 
 ```
 # --token
-▒  kubeadm token list | awk 'FNR==2 {print $1}')
+▒ kubeadm token list | awk 'FNR==2 {print $1}'
 
 # --discovery-token-ca-cert-hash
 ▒  openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //')

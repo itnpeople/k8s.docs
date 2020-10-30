@@ -169,6 +169,20 @@ EOF'
 EOF
 ~~~
 
+* admin.conf 파일에서 `server:` 로 시작하는 행에서 `server: (none)` 행을 추가하고 5번행을 삭제해 출력한다.
+~~~
+▒ sed -e '/server:/i\server: (none)' -e '5d'  admin.conf
+~~~
+
+* admin.conf 파일에서 5번행을  `    server: https://100.100.100.0:6443` 로 교체해서 출력
+~~~
+▒ sed '5s/.*/    server: https:\/\/100.100.100.0:6443/g' /etc/kubernetes/admin.conf
+~~~
+
+* credentials 파일 2행에서 `aws_secret_access_key = ` 문자열을 제거하고 출력
+~~~
+▒ head -n 2 credentials | tail -n 1 | sed  's/aws_secret_access_key = //g'
+~~~
 
 ## 기타
 

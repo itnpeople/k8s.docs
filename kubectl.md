@@ -130,3 +130,61 @@ EOF
 ▒ TOKEN=$(kubectl get secret -n kubernetes-dashboard $(kubectl get sa kubernetes-dashboard -n kubernetes-dashboard -o jsonpath={.secrets..name} | cut -f1 -d ' ') -o jsonpath='{$.data.token}' | base64 --decode)
 ▒ echo $TOKEN
 ~~~
+
+## Provisioning
+
+* Token
+~~~
+# 현재 token 리스트
+▒  kubeadm token list 
+
+# control-plane endpoint 확인
+▒ END_POINT=$(echo "$(kubeadm config view | grep controlPlaneEndpoint)" | awk '{ print $2}')
+
+#  token 생성
+▒ TOKEN=$(kubeadm token create)
+▒ HASH=$(openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //')
+
+# join (on worker node)
+kubeadm join <END_POINT> --token <TOKEN> --discovery-token-ca-cert-hash sha256:<HASH>
+~~~
+
+## Namespace Terminating 지연 이슈
+
+* 원인 : finalizer 가 정리되지 않음 
+  * https://shortstories.gitbook.io/studybook/kubernetes/undefined/kubernetes-namespace-phase-terminating)
+
+* 강제 삭제 명령
+```
+▒ kubectl proxy
+
+# 새로운 터미널창에서
+
+▒ NAMESPACE="istio-system"
+▒ kubectl get namespace ${NAMESPACE} -o json > temp.json
+
+# temp.json 파일에서 "finalizers" 값 제거
+▒ vi temp.json
+
+▒ curl -k -H "Content-Type: application/json" -X PUT --data-binary @temp.json http://127.0.0.1:8001/api/v1/namespaces/${NAMESPACE}/finalize
+▒ rm -f temp.json
+```
+
+## Tip. & Examples
+
+* 네임스페이스 리소스 일괄삭제 (`-o name` 응용)
+
+```
+▒ kubectl get all -n default -o name |xargs kubectl delete -n default
+```
+
+* CRD 일괄 삭제 명령어
+
+```
+▒ kubectl get crd |grep management.cattle.io | awk '{print $1}' |xargs kubectl delete crd
+```
+
+* 해당 CRD 리소스 일곽 삭제 명령어
+```
+▒ kubectl  get "users.management.cattle.io" | awk 'NR > 1 {print $1}' |xargs kubectl delete "users.management.cattle.io"
+```
