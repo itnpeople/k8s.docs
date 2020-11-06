@@ -25,7 +25,6 @@ squash 30e0ccb Changed the tagline in the binary, too.
  
 
 * 원격 리모트 추가
-
 ```
 ▒ git remote add upstream <remote repository url>
 ▒ git remote -v
@@ -40,7 +39,7 @@ squash 30e0ccb Changed the tagline in the binary, too.
 
 * 충돌이 발생할 경우 해당 파일을 수정
   * 충돌 메뉴얼로 수정 후 commit 단계별 `rebase --continue` 반복 작업
-  * 최신 동기화 이전에 branch 의 커밋을 합치면 보다 수월한 작업 (squash)
+  * 최신 동기화 이전에 branch 의 커밋을 합치면 보다 수월한 작업 (squash) 가능
 
 ```
 ▒ git add *
@@ -53,10 +52,10 @@ squash 30e0ccb Changed the tagline in the binary, too.
 ```
 
 ### 개발
-> 개발할 Feature branch를 신규 생성하고 해당 branch 에서 개발 작업을 수행한다.
+> 개발 할 branch를 신규 생성하고 해당 branch 에서 개발 작업을 수행한다.
 
 
-* 새로 개발할 Feature branch  만들기 
+* 새로 개발 할 branch  만들기 
 
 ```
 ▒ git branch <branchn ame>
@@ -68,17 +67,17 @@ squash 30e0ccb Changed the tagline in the binary, too.
 
 
 ### Pull Request 준비 작업
-> "Pull Request" 수행전 커밋을 합친 후 다시 한번 원격 리모트 repository 와 동기화하여 최신 소스를 branch 에 반영한다.
+> "Pull Request" 수행 전 커밋을 합친 후 다시 한번 원격 리모트 repository 와 동기화하여 최신 소스를 branch 에 반영한다.
 
 
-* 수월한 upstream 최신 동기화(rebase) 작업을 위해 커밋 합치기 (squash)
+* 보다 수월한 upstream 최신 동기화(rebase)를 위해 커밋 합치기 (squash)
 
 ```
 ▒ git rebase -i HEAD~4
 # .. 이후 작업은 <커밋 합치기(squash)> 참조
 ```
 
-* "Pull Request" 이전 다시 한번 최신으로 동기화 (rebase)
+* 최신으로 동기화 (rebase)
  
 ```
 ▒ git checkout <branch name>
@@ -140,7 +139,7 @@ squash 30e0ccb Changed the tagline in the binary, too.
 ```
 
 ### Squashed branch merge
-> 한 브랜치의 이력을 압축하여 다른 브랜치의 최신 커밋 하나로
+> 한 브랜치의 이력을 압축하여 다른 브랜치의 최신 커밋 하나로 머지
 
 ```
 ▒ git checkout master               # 머지하고자 하는 branch 로 HEAD 이동
@@ -148,7 +147,7 @@ squash 30e0ccb Changed the tagline in the binary, too.
 ▒ git commit -m 'Add ...'           # master branch 커밋
 ```
 
-## 로그
+## 커밋
 
 * 이전 커밋로그 수정
 ```
@@ -156,13 +155,13 @@ squash 30e0ccb Changed the tagline in the binary, too.
 ▒ git push origin +master
 ```
 
-* 커밋취소 (push 이전)
+* 커밋 취소 (push 이전)
 ```
 ▒ git reset HEAD~1
 ```
 
 
-## 그래프로 보기
+## Git 그래프 보기
 ```
 ▒ git log --graph  --abbrev-commit --pretty=oneline --all
 ```
@@ -174,12 +173,12 @@ squash 30e0ccb Changed the tagline in the binary, too.
 
 * 새로운 키 생성
 ```
-ssh-keygen -t rsa -f ~/.ssh/acornsoftlab-key -C "escho@acornsoft.io"
+▒ ssh-keygen -t rsa -f ~/.ssh/acornsoftlab-key -C "escho@acornsoft.io"
 ```
 
 * 키 복사
 ```
-cat ~/.ssh/acornsoftlab-key.pub 
+▒ cat ~/.ssh/acornsoftlab-key.pub 
 ```
 
 * Github SSH 키 등록
@@ -188,7 +187,7 @@ cat ~/.ssh/acornsoftlab-key.pub
 * 해당 SSH 키로 github SSH 연결 확인
 
 ```
-ssh -T -i ~/.ssh/acornsoftlab-key git@github.com
+▒ ssh -T -i ~/.ssh/acornsoftlab-key git@github.com
 
 Hi acornsoftlab! You've successfully authenticated, but GitHub does not provide shell access.
 ```
@@ -196,7 +195,7 @@ Hi acornsoftlab! You've successfully authenticated, but GitHub does not provide 
 * **ssh-agnet** 실행여부 확인 
 
 ```
-eval "$(ssh-agent -s)"
+▒ eval "$(ssh-agent -s)"
 
 Agent pid 8086
 ```
@@ -204,8 +203,8 @@ Agent pid 8086
 * **ssh-agnet** 에 키 등록 & 확인
 
 ```
-ssh-add ~/.ssh/acornsoftlab-key
-ssh-add -l
+▒ ssh-add ~/.ssh/acornsoftlab-key
+▒ ssh-add -l
 ```
 
 * **ssh-agnet** config 파일 설정
@@ -213,7 +212,7 @@ ssh-add -l
   * `HostName` : 실제 도메인
 
 ```
-vi ~/.ssh/config
+▒ vi ~/.ssh/config
 ```
 
 ```
@@ -230,30 +229,30 @@ Host github.aconsoftlab
 * **ssh-agnet** 에서 앤트리 삭제 후 재 등록 및  확인
 
 ```
-ssh-add -D 
-ssh-add ~/.ssh/acornsoftlab-key
-ssh-add -l
+▒ ssh-add -D 
+▒ ssh-add ~/.ssh/acornsoftlab-key
+▒ ssh-add -l
 ```
 
 * git clone
 
 ```
-git clone git@github.com:account_name/repo_name.git
-cd repo_name
+▒ git clone git@github.com:account_name/repo_name.git
+▒ cd repo_name
 ```
 
 * remote 주소 변경 
   * `github.com`을 이전 `~/.ssh/config`에 지정했던  계정을 구별 표시(`github.acornsoftlab`) 변경
 ```
-git remote add origin git@github.acornsoftlab:woaccount_name/repo_name.git 
+▒ git remote add origin git@github.acornsoftlab:woaccount_name/repo_name.git 
 ```
 
 * push 테스트
 
 ```
-git add .
-git commit -m "Initial commit"
-git push -u origin master
+▒ git add .
+▒ git commit -m "Initial commit"
+▒ git push -u origin master
 ```
 
 ### 참고

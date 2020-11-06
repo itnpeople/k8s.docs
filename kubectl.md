@@ -1,11 +1,39 @@
 # kubectl 활용
 
-## POD
 
-* 라벨로 파드명 조회
+## Get
+
+* 레이블
 ~~~
 ▒ kubectl get pod -l app=hello -o jsonpath={.items..metadata.name}
 ~~~
+
+* Jsonpath
+
+~~~
+▒ kubectl get pod -l app=hello -o jsonpath={.items..metadata.name}
+▒ kubectl get pod -l app.kubernetes.io/name=backend -o jsonpath={.items..metadata.name}  # simple
+▒ kubectl get svc/frontend -o jsonpath='{.spec.ports[?(@.name=="http")].nodePort}'       # 조건 (nodeport 조회)
+~~~
+
+## Delete
+
+* 네임스페이스 리소스 일괄삭제 (`-o name` 응용)
+
+```
+▒ kubectl get all -n default -o name |xargs kubectl delete -n default
+```
+
+* CRD 일괄 삭제 명령어
+
+```
+▒ kubectl get crd |grep management.cattle.io | awk '{print $1}' |xargs kubectl delete crd
+```
+
+* 해당 CRD 리소스 일곽 삭제 명령어
+```
+▒ kubectl  get "users.management.cattle.io" | awk 'NR > 1 {print $1}' |xargs kubectl delete "users.management.cattle.io"
+```
 
 ## Logs
 
@@ -13,31 +41,13 @@
 ▒ kubectl logs $(kubectl get pod -l app=hello -o jsonpath={.items..metadata.name}) -c hello-server-v1"
 ~~~
 
-## Rollout
+## Run
 
-`kubectl rollout  명령어` (https://kubernetes.io/ko/docs/reference/kubectl/cheatsheet/#리소스-업데이트)
-
-
+* busybox
 ~~~
-▒ kubectl set image deployment/frontend www=image:v2               # "frontend" 디플로이먼트의 "www" 컨테이너 이미지를 업데이트하는 롤링 업데이트
-▒ kubectl rollout history deployment/frontend                      # 현 리비전을 포함한 디플로이먼트의 이력을 체크 
-▒ kubectl rollout undo deployment/frontend                         # 이전 디플로이먼트로 롤백
-▒ kubectl rollout undo deployment/frontend --to-revision=2         # 특정 리비전으로 롤백
-▒ kubectl rollout status -w deployment/frontend                    # 완료될 때까지 "frontend" 디플로이먼트의 롤링 업데이트 상태를 감시
+▒ kubectl run -it --rm --restart=Never busybox --image=busybox sh
 ~~~
 
-## busybox
-
-~~~
-▒ kubectl run -it --rm --restart=Never busybox1 --image=busybox sh
-~~~
-
-## jsonpath
-
-~~~
-▒ kubectl get pod -l app.kubernetes.io/name=backend -o jsonpath={.items..metadata.name}  # simple
-▒ kubectl get svc/frontend -o jsonpath='{.spec.ports[?(@.name=="http")].nodePort}'       # 조건 (nodeport 조회)
-~~~
 
 ## Port Forward
 
@@ -50,12 +60,12 @@
 ▒ kubectl port-forward --context acorn-rnd svc/productpage -n default 9080 > /dev/null 2>&1 &  # 출력 & 에러 + 데몬
 ~~~
 
-* pod 포트 포워딩
+* Local 8080 포트로 포워딩 
 ~~~
-▒ kubectl port-forward $(kubectl get pod -l app=httpbin -o jsonpath={.items..metadata.name}) 8080:80
+▒ kubectl port-forward httpbin 8080:80
 ~~~
 
-* 어플리케이션별 포트 포워딩 예제
+* 포워딩 예제
 ~~~
 ▒ kubectl -n istio-system port-forward $(kubectl -n istio-system get pod -l app=prometheus -o jsonpath='{.items[0].metadata.name}') 9090:9090   # Prometheus
 ▒ kubectl -n istio-system port-forward $(kubectl -n istio-system get pod -l app=kiali -o jsonpath='{.items[0].metadata.name}') 20001:20001      # Kiali
@@ -76,7 +86,7 @@
 * Proxy 를 통해 접근
 
 ~~~
-▒ kubectl  proxy
+▒ kubectl proxy
 ▒ TOKEN="$(kubectl get secret $(kubectl get secrets | grep default-token | cut -f1 -d ' ') -o jsonpath='{$.data.token}' | base64 --decode)"
 ▒ curl -D --insecure --header "Authorization: Bearer $TOKEN" http://localhost:8001/api/v1/namespaces/default/pods
 ~~~
@@ -88,6 +98,41 @@
 ▒ kubectl get secret -o jsonpath="{.items[?(@.type==\"kubernetes.io/service-account-token\")].data['ca\.crt']}" | base64 --decode > ca.crt
 ▒ curl --cacert ca.crt -H "Authorization: Bearer $TOKEN" https://101.55.69.109:6443/api/v1/namespaces/default/pods
 ~~~
+
+## Rollout
+
+* https://kubernetes.io/ko/docs/reference/kubectl/cheatsheet/#리소스-업데이트)
+
+
+~~~
+▒ kubectl set image deployment/frontend www=image:v2               # "frontend" 디플로이먼트의 "www" 컨테이너 이미지를 업데이트하는 롤링 업데이트
+▒ kubectl rollout history deployment/frontend                      # 현 리비전을 포함한 디플로이먼트의 이력을 체크 
+▒ kubectl rollout undo deployment/frontend                         # 이전 디플로이먼트로 롤백
+▒ kubectl rollout undo deployment/frontend --to-revision=2         # 특정 리비전으로 롤백
+▒ kubectl rollout status -w deployment/frontend                    # 완료될 때까지 "frontend" 디플로이먼트의 롤링 업데이트 상태를 감시
+~~~
+
+## Patch
+> Patch 명령으로 CRD 수정 및 추가
+
+```
+▒ kubectl patch svc you-svc -p '{"spec": {"type": "NodePort"}}'
+
+▒ kubectl patch pod valid-pod -type='json' -p='[{"op": "replace", "path": "/spec/containers/0/image", "value":"new image"}]'
+
+▒ kubectl patch svc productpage -n bookinfo --type="json" -p '[
+  {"op":"replace", "path":"/spec/type",             "value":"NodePort"},
+  {"op":"add",     "path":"/spec/ports/0/nodePort", "value":30180 }
+]'
+```
+
+## Config
+
+* insecure-skip-tls-verify
+
+```
+▒ kubectl config set-cluster kubernetes --insecure-skip-tls-verify=true
+```
 
 ## Dashboard
 
@@ -131,25 +176,10 @@ EOF
 ▒ echo $TOKEN
 ~~~
 
-## Provisioning
 
-* Token
-~~~
-# 현재 token 리스트
-▒  kubeadm token list 
+## Troubleshooting
 
-# control-plane endpoint 확인
-▒ END_POINT=$(echo "$(kubeadm config view | grep controlPlaneEndpoint)" | awk '{ print $2}')
-
-#  token 생성
-▒ TOKEN=$(kubeadm token create)
-▒ HASH=$(openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //')
-
-# join (on worker node)
-kubeadm join <END_POINT> --token <TOKEN> --discovery-token-ca-cert-hash sha256:<HASH>
-~~~
-
-## Namespace Terminating 지연 이슈
+### Namespace Terminating 지연 이슈
 
 * 원인 : finalizer 가 정리되지 않음 
   * https://shortstories.gitbook.io/studybook/kubernetes/undefined/kubernetes-namespace-phase-terminating)
@@ -168,23 +198,4 @@ kubeadm join <END_POINT> --token <TOKEN> --discovery-token-ca-cert-hash sha256:<
 
 ▒ curl -k -H "Content-Type: application/json" -X PUT --data-binary @temp.json http://127.0.0.1:8001/api/v1/namespaces/${NAMESPACE}/finalize
 ▒ rm -f temp.json
-```
-
-## Tip. & Examples
-
-* 네임스페이스 리소스 일괄삭제 (`-o name` 응용)
-
-```
-▒ kubectl get all -n default -o name |xargs kubectl delete -n default
-```
-
-* CRD 일괄 삭제 명령어
-
-```
-▒ kubectl get crd |grep management.cattle.io | awk '{print $1}' |xargs kubectl delete crd
-```
-
-* 해당 CRD 리소스 일곽 삭제 명령어
-```
-▒ kubectl  get "users.management.cattle.io" | awk 'NR > 1 {print $1}' |xargs kubectl delete "users.management.cattle.io"
 ```

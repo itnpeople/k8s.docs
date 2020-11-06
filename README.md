@@ -1,70 +1,35 @@
-# Kubernetes 관련 메모
+# Tips
 > 깜빡깜빡하는 늙은 개발자를 위한 정리
 
-## 문서
+## Kubernetes
 
-* [docker.md](./docker.md)
-* [kubectl.md](./kubectl.md)
-* [helm.md](./helm.md)
-* [minikube.md](./minikube.md)
-* [shell.md](./shell.md)
-
-## Helm Chart
-
-* [httpbin](./charts/httpbin)
+* [kubectl](./kubectl.md)
+* [kubeadm](./kubernetes.kubeadm.md)
+* [network](./kubernetes.network.md)
+* [security](./kubernetes.security.md)
+* [minikube](./minikube.md)
+* [demo applications](./demo/README.md)
+* Links
+  * [kubectl 치트 시트](https://kubernetes.io/ko/docs/reference/kubectl/cheatsheet/)
+  * [kubernetes api](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.17/)
 
 ## Istio
 
 * [install istio](./istio/install.md)
 * [install kiali](./istio/install.kiali.md)
-* [cli](./istio/cli.md)
+* [istio cli](./istio/cli.md)
+* [fortio](./istio/fortio.md)
 
+## Cloud Native
 
-## 링크
+* [docker](./docker.md)
+* [helm](./helm.md)
+* [cloud](./cloud.md)
+* [prometheus](./prometheus.md)
 
-* [kubectl 치트 시트](https://kubernetes.io/ko/docs/reference/kubectl/cheatsheet/)
-* [kubernetes api](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.17/)
-
-## 기타
-
-* BusyBox
-~~~
-apiVersion: v1
-kind: Pod
-metadata:
-  name: busybox
-  namespace: default
-spec:
-  containers:
-  - name: busybox
-    image: busybox:1.28
-    command:
-      - sleep
-      - "3600"
-    imagePullPolicy: IfNotPresent
-  restartPolicy: Always
-~~~
-
-~~~
-▒ kubectl exec -n default -ti busybox -- nslookup kubernetes.default
-~~~
-
-* httpbin
-~~~
-apiVersion: v1
-kind: Pod
-metadata:
-  name: httpbin
-  labels:
-    app: httpbin
-spec:
-  containers:
-  - image: docker.io/honester/httpbin:latest
-    imagePullPolicy: IfNotPresent
-    name: httpbin
-~~~
-
-~~~
-▒ do kubectl exec -it httpbin -c httpbin -- curl http://svc-hello.default:8080;
-▒ for i in {1..20}; do kubectl exec -it httpbin -c httpbin -- curl http://svc-hello.default:8080; sleep 0.1; done
-~~~
+## Development
+* [shell](./shell.md)
+* [go-lang](./golang.md)
+* [git](./git.md)
+* [httpbin](./charts/httpbin)
+* [jmeter](./jmeter.md)

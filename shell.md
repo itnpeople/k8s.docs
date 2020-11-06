@@ -18,8 +18,10 @@
 ▒ curl -i https://httpbin.org/ip                                                 # -i : print with http-headers
 ~~~
 
+## 문자열 조작
 
-## cut
+### cut
+>  구분자로 문자열 추출
 
 * `cut -f1 -d ' '` : ' ' 로 구분 했을 때 첫번째 컬럼
 
@@ -27,7 +29,8 @@
 ▒ kubectl get secrets | grep default | cut -f1 -d ' '
 ~~~
 
-## awk
+### awk
+> 문자열 처리
 
 ```
 # 2행 1번째 컬럼 값 
@@ -35,14 +38,16 @@
 ```
 
 
-## nslookup
+## Network
+
+### nslookup
 
 ~~~
 ▒ nslookup 209.132.183.181  # IP로 도메인 찾기
 ▒ nslookup redhat.com 8.8.8.8 # 특정 DNS (8.8.8.8 google)를 사용하여 도메인 검색
 ~~~
 
-## 원격서버 포트 점검
+### 원격서버 포트 점검
 
 * nc (network cat)
 ~~~
@@ -58,7 +63,7 @@
 ~~~
 
 
-## 로컬 포트 확인 
+### 로컬 포트 확인 
 
 * [losf](https://zetawiki.com/wiki/리눅스_lsof)
 ~~~
@@ -70,9 +75,9 @@
 ▒ netstat -tnlp
 ~~~
 
-## 퍼블릭 아이피 얻기
+### 퍼블릭 아이피 얻기
 
-* [dig](https://zetawiki.com/wiki/리눅스_dig))
+* [dig](https://zetawiki.com/wiki/리눅스_dig)
 
 ~~~
 # yum install -y bind-utils
@@ -81,7 +86,7 @@
 ▒ curl ifconfig.me
 ~~~
 
-## ip addr, [ifconfig](https://zetawiki.com/wiki/리눅스_ifconfig)
+### ip addr, [ifconfig](https://zetawiki.com/wiki/리눅스_ifconfig)
 
 ~~~
 # yum install -y net-tools
@@ -96,7 +101,7 @@
 ▒ ip addr
 ~~~
 
-## IP routing 조회
+### IP routing 조회
 
 ~~~
 ▒ route -n
@@ -122,23 +127,21 @@
 ## 커널
 
 ~~~
-▒ lsmod | grep 8021q		# 커널에서 vlan 모듈(8021q) 존재 확인
-▒ modprobe 8021q			# 커널에 vlan 모듈(8021q) 추가
+▒ lsmod | grep 8021q  # 커널에서 vlan 모듈(8021q) 존재 확인
+▒ modprobe 8021q      # 커널에 vlan 모듈(8021q) 추가
 ~~~
 
-## 파일
+## 파일 조작
+
+### 파일 생성
 
 * echo 명령으로 파일 만들기
+
 ~~~
 ▒  echo -e "[Interface]
 Address = 10.66.66.1/24
 ListenPort = 51820
 PrivateKey = $(sudo wg genkey)" | sudo tee /etc/wireguard/wg0.conf
-~~~
-
-* 파일에 행 추가
-~~~
-▒  echo "set \$l7 ${COMMAND};" | sudo tee -a /usr/local/nginx/conf/nginx-test.conf"
 ~~~
 
 * cat 으로 파일 생성 sudo
@@ -169,27 +172,7 @@ EOF'
 EOF
 ~~~
 
-* admin.conf 파일에서 `server:` 로 시작하는 행에서 `server: (none)` 행을 추가하고 5번행을 삭제해 출력한다.
-~~~
-▒ sed -e '/server:/i\server: (none)' -e '5d'  admin.conf
-~~~
-
-* admin.conf 파일에서 5번행을  `    server: https://100.100.100.0:6443` 로 교체해서 출력
-~~~
-▒ sed '5s/.*/    server: https:\/\/100.100.100.0:6443/g' /etc/kubernetes/admin.conf
-~~~
-
-* credentials 파일 2행에서 `aws_secret_access_key = ` 문자열을 제거하고 출력
-~~~
-▒ head -n 2 credentials | tail -n 1 | sed  's/aws_secret_access_key = //g'
-~~~
-
-## 기타
-
-* ubuntu 호스트명 변경
-~~~
-▒  hostnamectl set-hostname "cb-k8s-master" && exec bash
-~~~
+### 파일 LF(line feed) 문자열 변환
 
 * 파일(gcp.key)을 라인별로 읽어서 "\n" 붙여 문자열로 만들기
 ~~~
@@ -209,6 +192,39 @@ done < "gcp.key"
 
 # 방법 2
 ▒ cat aaa.txt | while read line; do if [[ "$line" != "" ]]; then echo -n "$line\n";fi; done
+~~~
+
+
+### 파일 수정 `tee`
+
+* 파일에 행 추가
+~~~
+▒  echo "set \$l7 ${COMMAND};" | sudo tee -a /usr/local/nginx/conf/nginx-test.conf"
+~~~
+
+### 파일 문자열(행) 추가, 변환, 제거 `sed`
+
+* admin.conf 파일에서 `server:` 로 시작하는 행에서 `server: (none)` 행을 추가하고 5번행을 삭제해 출력한다.
+~~~
+▒ sed -e '/server:/i\server: (none)' -e '5d'  admin.conf
+~~~
+
+* admin.conf 파일에서 5번행을  `    server: https://100.100.100.0:6443` 로 교체해서 출력
+~~~
+▒ sed '5s/.*/    server: https:\/\/100.100.100.0:6443/g' /etc/kubernetes/admin.conf
+~~~
+
+* credentials 파일 2행에서 `aws_secret_access_key = ` 문자열을 제거하고 출력
+~~~
+▒ head -n 2 credentials | tail -n 1 | sed  's/aws_secret_access_key = //g'
+~~~
+
+
+## 기타
+
+* ubuntu 호스트명 변경
+~~~
+▒  hostnamectl set-hostname "cb-k8s-master" && exec bash
 ~~~
 
 * Linux `reboot` 명령이  hang 걸렸을 경우 대처 방법 [원본](https://unix.stackexchange.com/questions/442932/reboot-is-not-working)
