@@ -181,9 +181,12 @@ EOF
 
 ### Namespace Terminating 지연 이슈
 
-* 원인 : finalizer 가 정리되지 않음 
+#### 원인
+* finalizer 가 정리되지 않음 
   * https://shortstories.gitbook.io/studybook/kubernetes/undefined/kubernetes-namespace-phase-terminating)
 
+
+### 해결
 * 강제 삭제 명령
 ```
 ▒ kubectl proxy
@@ -198,4 +201,45 @@ EOF
 
 ▒ curl -k -H "Content-Type: application/json" -X PUT --data-binary @temp.json http://127.0.0.1:8001/api/v1/namespaces/${NAMESPACE}/finalize
 ▒ rm -f temp.json
+```
+
+### Kubectl x509 Unable to Connect
+
+#### 현상
+
+* 클라이언트에서 kubectl  실행시 아래와 같은 메시지 발생
+```
+Unable to connect to the server: x509: certificate is valid for
+```
+
+* 그러나 `insecure-skip-tls-verify` 옵션 처리하면 정상 처리 
+
+```
+▒ kubectl --insecure-skip-tls-verify --context=some-context get pods
+```
+
+* cluster node 내부에서는 kubectl 정상 실행되고 외부에서만 발생
+
+#### 원인
+
+보통 kubeadm  init한 경우 내부 IP만 certificate authority(CA)가 생성이 되도록만 하고 외부 IP (LB ) 는 반영되도록 하지 않았기 때문에 외부에서 접근할 때 오류 발생
+
+
+#### 해결
+> https://imti.co/kubectl-remote-x509-valid/
+
+`apiserver-cert-extra-sans` 옵션에 외부(공인) IP를 추가하여 해결
+
+```
+# remove the certs
+▒ rm /etc/kubernetes/pki/apiserver.* 
+
+# re-create with updated --apiserver-cert-extra-sans 
+▒ kubeadm init phase certs all --apiserver-advertise-address=0.0.0.0 --apiserver-cert-extra-sans=101.55.69.105
+
+# remove the kubernetes api server container docker 
+▒ rm -f `docker ps -q -f 'name=k8s_kube-apiserver*'` 
+
+# restart the kublet 
+▒ systemctl restart kubelet
 ```

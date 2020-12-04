@@ -38,90 +38,6 @@
 ```
 
 
-## Network
-
-### nslookup
-
-~~~
-▒ nslookup 209.132.183.181  # IP로 도메인 찾기
-▒ nslookup redhat.com 8.8.8.8 # 특정 DNS (8.8.8.8 google)를 사용하여 도메인 검색
-~~~
-
-### 원격서버 포트 점검
-
-* nc (network cat)
-~~~
-# network cat
-▒ nc -z 8.8.8.8 53
-~~~
-
-* nmap
-~~~
-# nmap
-▒ nmap localhost
-▒ nmap ko.wikipedia.org -p 80
-~~~
-
-
-### 로컬 포트 확인 
-
-* [losf](https://zetawiki.com/wiki/리눅스_lsof)
-~~~
-▒ lsof -i -nP | grep LISTEN | awk '{print $(NF-1)" "$1}' | sort -u
-~~~
-
-* [netstat](https://zetawiki.com/wiki/리눅스_netstat))
-~~~
-▒ netstat -tnlp
-~~~
-
-### 퍼블릭 아이피 얻기
-
-* [dig](https://zetawiki.com/wiki/리눅스_dig)
-
-~~~
-# yum install -y bind-utils
-▒ dig +short myip.opendns.com @resolver1.opendns.com
-
-▒ curl ifconfig.me
-~~~
-
-### ip addr, [ifconfig](https://zetawiki.com/wiki/리눅스_ifconfig)
-
-~~~
-# yum install -y net-tools
-
-# public ip로 network interface 생성
-▒ ifconfig eth0:1 $(dig +short myip.opendns.com @resolver1.opendns.com) up
-▒ ifconfig eth0:1 $(dig +short myip.opendns.com @resolver1.opendns.com) up
-
-# nic 비활성화
-▒ ifconfig eth0:1 down
-
-▒ ip addr
-~~~
-
-### IP routing 조회
-
-~~~
-▒ route -n
-▒ ip route
-▒ netstat -rn
-
-# route table에 rule 추가
-# 재부팅시 reset, 재부팅시에도 반영되도록 하는 방법은 리눅스 계열별로 참조
-
-▒ route add -net 111.222.33.44 netmask 255.255.255.255 dev eth0	# 111.222.33.44 들어오는 네트워크 요청에 대해 nic eth0 로 응답
-▒ route add -net 111.222.33.0 netmask 255.255.255.0 dev eth0	# 111.222.33.* 들어오는 네트워크 요청에 대해 nic eth0 로 응답
-▒ route del -net 111.222.33.44 netmask 255.255.255.255 dev eth0 # 삭제
-
-▒ traceroute 10.90.1.11 # routing trace
-~~~
-
-메인 network interface 이름 얻기
-~~~
-▒ ip route get 8.8.8.8 | awk '{ print $5; exit }'
-~~~
 
 
 ## 커널
@@ -219,17 +135,20 @@ done < "gcp.key"
 ▒ head -n 2 credentials | tail -n 1 | sed  's/aws_secret_access_key = //g'
 ~~~
 
+* 문자열 Replace
 
-## 기타
+```
+# 문자열
+▒ echo "aaaa.bbbb.cccc" | sed -e "s/aaaa/bbbb/g"
 
-* ubuntu 호스트명 변경
-~~~
-▒  hostnamectl set-hostname "cb-k8s-master" && exec bash
-~~~
+bbbb.bbbb.cccc
+```
 
-* Linux `reboot` 명령이  hang 걸렸을 경우 대처 방법 [원본](https://unix.stackexchange.com/questions/442932/reboot-is-not-working)
+* 특수문자 Replace - "\"를 앞에 붙여줌
 
-~~~
-▒ echo 1 > /proc/sys/kernel/sysrq
-▒ echo b > /proc/sysrq-trigger
-~~~
+```
+# 큰따옴표를 제거
+▒ echo "\"cb-cluster-w-xzuz4\"" | sed -e "s/\"//g"
+
+cb-cluster-w-xzuz4
+```

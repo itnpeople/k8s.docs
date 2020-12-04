@@ -24,7 +24,7 @@
 
 * [docker](./docker.md)
 * [helm](./helm.md)
-* [cloud](./cloud.md)
+* [cloud](./clouds.md)
 * [prometheus](./prometheus.md)
 
 ## Development
@@ -33,3 +33,7 @@
 * [git](./git.md)
 * [httpbin](./charts/httpbin)
 * [jmeter](./jmeter.md)
+
+## Frameworks
+* [nuxt](./nuxt.md)
+

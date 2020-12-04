@@ -42,8 +42,15 @@
 ```
 # <host path>:<container path>
 
-▒ docker run --rm -d -p 3001:3001 -v ${HOME}/.kube/config:/app/kube-config --name backend acornsoftlab/kore3.backend:latest
+▒ docker run --rm -d -p 3001:3001 -v ${HOME}/.kube/config:/app/kube-config --name backend acornsoftlab/acornsoft-dashboard.backend:latest
 ```
+
+* enviroment (e 옵션)
+
+```
+▒ docker run --rm -d -p 3001:3001 -e BACKEND_PORT=3001 -v ${HOME}/.kube/config:/app/kube-config --name backend acornsoftlab/acornsoft-dashboard.backend:latest
+```
+
 
 ## Toubleshooting
 
