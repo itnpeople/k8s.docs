@@ -1,21 +1,251 @@
 # Git
 
-## 커밋 합치기(squash)
- 
-~~~
-# HEAD 에서 이전 4개 commit 으로 rebase
-▒ git rebase -i HEAD~4
+## Head 이동
 
-# 2~4번 커밋을 1번 커밋에 squash 하고 저장
+```
+# history back -1
+▒ git checkout HEAD~1
+
+# come back
+▒ git checkout master
+```
+
+## Branch
+
+* branch 이동
+
+```
+▒ git checkout <branchname>
+```
+
+* branch  만들기
+```
+▒ git branch <branchname>
+▒ git push origin <branchname>
+▒ git checkout <branchname>
+```
+
+* branch 삭제
+
+```
+▒ git checkout master
+▒ git branch -D <branchname>
+▒ git push origin :<branchname>
+```
+
+## Merge
+
+* master 로 머지
+
+```
+▒ git checkout master
+▒ git merge <branch name>
+▒ git push origin master
+```
+
+### rebase merge
+> merge commit 없이 하나의 branch로 merge
+
+* develop branch 에서 master branch 로 merge 하는 경우 예
+
+```
+▒ git checkout develop      # develop branch 로 HEAD 이동
+▒ git rebase master         # rebase
+▒ git checkout master       # master branch 로 HEAD 이동
+▒ git merge develop         # megee 수행
+▒ git push origin master    # master push
+```
+
+### Squashed branch merge
+> 한 브랜치의 이력을 압축하여 다른 브랜치의 최신 커밋 하나로 merge
+
+```
+▒ git checkout master               # merge 하고자 하는 branch 로 HEAD 이동
+▒ git merge --squash feature/archi  # mater branch 로 feature/archi branch 를 merge
+▒ git commit -m 'Add ...'           # master branch 커밋
+▒ git push origin master            # master push
+```
+
+## 취소 (reset)
+
+* HEAD
+  * <commit id> : 특정 HEAD 위치 지정
+  * HEAD@{숫자} : 이전 {숫자} 만큼 이전 위치로 이동
+  * HEAD^ : 현재 바로 이전 위치로 이동
+
+* Reset 옵션
+  * --mixed : 워킹디렉토리와 Index 영역 모두 초기화, 변경 이력 및 내용 전부 삭제
+  * --hard (기본값) :  Index 영역은 초기화되고 워킹디렉토리는 변경되지 않음
+  * --soft : 변경 이력 삭제, 변경된 내용은 그대로 존재
+
+
+### Commit 취소
+
+* commit을 취소하고 해당 파일들은 스테이징 영역에 보존
+```
+▒ git reset --soft <commit id>
+```
+
+* commit을 취소하고 해당 파일들은 Unstaging
+```
+▒ git reset --mixed <commit id>
+▒ git reset <commit id>
+```
+
+* commit을 취소하고 해당 파일들의 변경점 삭제
+```
+▒ git reset --hard <commit id>
+```
+
+* 참조
+  * [Git 도구 - Reset 명확히 알고 가기](https://git-scm.com/book/ko/v2/Git-%EB%8F%84%EA%B5%AC-Reset-%EB%AA%85%ED%99%95%ED%9E%88-%EC%95%8C%EA%B3%A0-%EA%B0%80%EA%B8%B0)
+  * [작업 되돌리는 명령어 Reset & Revert](https://velog.io/@ha0kim/GIT-%EC%9E%91%EC%97%85-%EB%90%98%EB%8F%8C%EB%A6%AC%EB%8A%94-%EB%AA%85%EB%A0%B9%EC%96%B4-Reset-Revert)
+
+
+### Push 취소
+
+* 되돌아간 commit 이후의 모든 commit 정보가 모두 삭제
+*  local의 내용을 remote에 강제로 덮어쓰기
+
+```
+▒ git reset <commit id>             # 또는 git reset HEAD@{숫자}
+▒ git push origin +<branch name>
+▒ git pull
+```
+
+
+## 커밋 합치기(squash)
+
+1. HEAD(현재 최신위치) 에서 변경하고 싶은 commit 으로 rebase
+1. 합치고 싶은 커밋을 pick 을 `squash` 또는 `s` 로 변경 하고 저장 (:wq)
+1. 커밋메시지를 수정하고 저장 (:wq) 
+1. git 푸쉬 (--force)
+
+~~~
+▒ git rebase -i HEAD~4
 
 pick 01d1124 Adding license
 squash 6340aaa Moving license into its own file
 squash ebfd367 Jekyll has become self-aware.
 squash 30e0ccb Changed the tagline in the binary, too.
 
-# push 
 ▒ git push origin +master
 ~~~
+
+## 커밋 메시지 수정
+
+* 최근 메시지
+
+```
+▒ git commit --amend
+```
+
+* 이전 메시지 
+1. HEAD(현재 최신위치) 에서 변경하고 싶은 commit 으로 rebase
+1. 수정하고 싶은 싶은 커밋을  `pick` 에서 `reword` 또는 `r` 로 변경 하고 저장 (:wq)
+1. 커밋메시지를 수정하고 저장 (:wq) 
+1. git 푸쉬 (--force)
+
+```
+▒ git rebase -i HEAD~3
+
+pick e499d89 Delete CNAME
+reword 0c39034 Better README
+pick f7fde4a Change the commit message but push the same commit.
+
+▒ git push origin +master
+```
+
+
+## 리모트 저장소와의 동기화
+
+### 브랜치 최신화
+
+로컬 브랜치를 리모트 저장소의 브랜치와 동기화하고 최신화(최신 커밋을 참조)하려면 
+master 브랜치를 먼저 패치한 후 최신화 하고자 하는 브랜치로 체크아웃하여 리셋을 실행한다.
+
+```
+# master 패치
+
+▒ git checkout master
+▒ git fetch
+▒ git pull origin master
+
+#  브랜치 리셋
+
+▒ git checkout <branch name>
+▒ git reset --hard origin/<branch name>
+```
+
+* `git fetch` 명령은 원격 저장소로 부터 가져온 모든 브랜치의 헤드를 .git/FETCH_HEAD 파일에 기록
+* FETCH_HEAD는 원격 저장소로부터 가져온 브랜치의 HEAD를 의미
+* `reset --hard` 명령은 작업 디렉토리와 인덱스의 상태를 모두 리셋하므로 주의
+
+
+### 포크한 저장소와 원본 저장소 동기화
+
+* 원본 저장소 (upstream) 등록
+```
+▒ git remote add upstream <remote repository url>
+▒ git remote -v
+```
+
+* fetch 및 branch 별 동기화
+```
+▒ git fetch upstream
+
+▒ git checkout master
+▒ git rebase upstream/master
+▒ git push origin +master
+
+▒ git checkout develop
+▒ git rebase upstream/develop
+▒ git push origin +develop
+```
+
+* 테그가 동기화되어있지 않다면
+
+```
+▒ git fetch upstream v0.1.2
+▒ git tag v0.1.2 FETCH_HEAD
+▒ git push origin v0.1.2
+```
+
+
+
+## 복구하기 (reflog)
+
+### 실수로 삭제한 branch 복구
+
+* git reflog 확인
+```
+▒ git reflog
+```
+
+* HEAD@{숫자}로 이루어진 로그 중
+* 돌아가고 싶은 상태의 숫자를 확인하고 아래의 명령어에 입력
+```
+▒ git checkout -b <삭제된 브랜치 이름> HEAD@{숫자}
+```
+
+### 실수로 삭제한 Commit 복구하기
+
+* git reflog 확인
+```
+▒ git reflog
+```
+
+* commit id를 이용, 코드 복구
+
+```
+▒ git reset --hard commit_id
+```
+
+## Git 그래프 보기
+```
+▒ git log --graph  --abbrev-commit --pretty=oneline --all
+```
+
 
 
 ## Pull Request
@@ -99,18 +329,18 @@ squash 30e0ccb Changed the tagline in the binary, too.
 ▒ git commit –a –m “Rev 1 xxxxxx”                  
 ```
 
-* 수정된 소스를 "Pull Request"에 업데이트 (Forked repository branch 에서 --force 옵션을 주고 Push)
+* 커밋을 force Push (Push된 내용은 Pull Request에 자동 자동 반영)
 ```
 ▒ git push origin <branch name> --force 
 ```
 
+
 ## Pull Request Local 에 다운로드 받기
 
-* `.git.config` 파일을 열어  romete 섹션에 `fetch = +refs/pull/*/head:refs/remotes/origin/pr/*` 을 추가
-* 만일 remote 섹션 `upstream` 일 경우
+* `.git.config` 파일을 열어  romete 섹션에 `fetch = +refs/pull/*/head:refs/remotes/origin/pr/*` 을 추가 (remote 가 `upstream` 인 경우)
 
 ```
-$ vi .git.config
+▒ vi .git.config
 ```
 
 ```
@@ -121,102 +351,15 @@ $ vi .git.config
 ```
 
 ```
-$ git fetch upstream
-$ git checkout origin/pr/17
+▒ git fetch upstream
+▒ git checkout origin/pr/17
 ```
 
-## Branch
+## Git-Flow (브랜치 전략)
 
-
-* branch 이동
-
-```
-▒ git checkout <branchname>
-```
-
-* branch  만들기
-```
-▒ git branch <branchname>
-▒ git push origin <branchname>
-▒ git checkout <branchname>
-```
-
-* branch 삭제
-
-```
-▒ git checkout master
-▒ git branch -D <branchname>
-▒ git push origin :<branchname>
-```
-
-
-## Merge
-
-* master 로 머지
-
-```
-▒ git checkout master
-▒ git merge <branch name>
-▒ git commit -m 'Update contact page'
-▒ git push origin master
-```
-
-### Squashed branch merge
-> 한 브랜치의 이력을 압축하여 다른 브랜치의 최신 커밋 하나로 머지
-
-```
-▒ git checkout master               # 머지하고자 하는 branch 로 HEAD 이동
-▒ git merge --squash feature/archi  # mater branch 로 feature/archi branch 를 merge
-▒ git commit -m 'Add ...'           # master branch 커밋
-```
-
-## 커밋
-
-* 이전 커밋로그 수정
-```
-▒ git commit --amend
-▒ git push origin +master
-```
-
-* 커밋 취소 (push 이전)
-```
-▒ git reset HEAD~1
-```
-
-
-## 복구하기 (reflog)
-
-### 실수로 삭제한 branch 복구
-
-* git reflog 확인
-```
-$ git reflog
-```
-
-* HEAD@{숫자}로 이루어진 로그 중
-* 돌아가고 싶은 상태의 숫자를 확인하고 아래의 명령어에 입력
-```
-$ git checkout -b <삭제된 브랜치 이름> HEAD@{숫자}
-```
-
-### 실수로 삭제한 Commit 복구하기
-
-* git reflog 확인
-```
-$ git reflog
-```
-
-* commit id를 이용, 코드 복구
-
-```
-$ git reset --hard commit_id
-```
-
-## Git 그래프 보기
-```
-▒ git log --graph  --abbrev-commit --pretty=oneline --all
-```
-
+* [Basic Git Flow For Making Open Source Contributions on GitHub](https://dnncommunity.org/blogs/Post/1470/Basic-Git-Flow-For-Making-Open-Source-Contributions-on-GitHub)
+* [우린 Git-flow를 사용하고 있어요](https://woowabros.github.io/experience/2017/10/30/baemin-mobile-git-branch-strategy.html)
+* [브랜치의 종류](https://mylko72.gitbooks.io/git/content/branch/branch_type.html)
 
 ## GitHub SSH 다중 계정 관리 (macOS)
 >git에서 게정별로 구분하는 방법이 없어 `ssh-agent` 를 활용을 통해 가능
@@ -316,20 +459,20 @@ Host github.aconsoftlab
 
 * 태깅
 ```
-$ git tag v0.2.8              # 현재 커밋에 태그
-$ git tag v0.2.8 03c0beb080   # 커밋 지정 태그
+▒ git tag v0.2.8              # 현재 커밋에 태그
+▒ git tag v0.2.8 03c0beb080   # 커밋 지정 태그
 ```
 
 * Push
 ```
-$ git push origin --tags      # 모든 태그 push
-$ git push origin v0.2.8      # 태그 지정 push
+▒ git push origin --tags      # 모든 태그 push
+▒ git push origin v0.2.8      # 태그 지정 push
 ```
 
 * 태그 삭제
 ```
-$ git tag -d v0.2.8           # 삭제
-$ git push origin :v0.2.8     # Push
+▒ git tag -d v0.2.8           # 삭제
+▒ git push origin :v0.2.8     # Push
 ```
 
 ## Github Container Registry
@@ -339,7 +482,7 @@ ghcr.io/<GITHUB_ID>/<IMAGE_NAME>:<TAG>
 ```
 
 ### 시작하기
-> > [깃허브 컨테이너 레지스트리 베타 오픈 및 사용법](https://www.44bits.io/ko/post/news--github-container-registry-beta-release#%EA%B9%83%ED%97%88%EB%B8%8C-%EC%BB%A8%ED%85%8C%EC%9D%B4%EB%84%88-%EB%A0%88%EC%A7%80%EC%8A%A4%ED%8A%B8%EB%A6%ACgithub-container-registry-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0)
+> [깃허브 컨테이너 레지스트리 베타 오픈 및 사용법](https://www.44bits.io/ko/post/news--github-container-registry-beta-release#%EA%B9%83%ED%97%88%EB%B8%8C-%EC%BB%A8%ED%85%8C%EC%9D%B4%EB%84%88-%EB%A0%88%EC%A7%80%EC%8A%A4%ED%8A%B8%EB%A6%ACgithub-container-registry-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0)
 
 1. Github 프로필 페이지에서 "Settings > Developer settings > Personal access tokens" 선택
 1. "Generate New Toekn" 버튼 클릭
@@ -351,7 +494,7 @@ ghcr.io/<GITHUB_ID>/<IMAGE_NAME>:<TAG>
 * Registry 로그인
 
 ```
-$ cat github.itnpeople.token | docker login ghcr.io -u itnpeople --password-stdin
+▒ cat github.itnpeople.token | docker login ghcr.io -u itnpeople --password-stdin
 ```
 
 * Github 프로필 페이지 "Packages" 탭에서 조회

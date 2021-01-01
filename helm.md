@@ -26,20 +26,22 @@ stable/nginx-lego               0.3.1                           Chart for nginx-
 stable/gcloud-endpoints         0.1.2           1               DEPRECATED Develop, deploy, protect and monitor...
 
 # 설치
-▒ helm install release-devel stable/nginx-ingress
+▒ helm install nginx-devel stable/nginx-ingress
 
 # 조회
 ▒ helm list
 ```
 
+
 ### Github을 Repository로 구성하기
 
 *  helm chart의 tgz 파일 생성 helm package
 ```
-▒ helm package [sample-chart]
+▒ helm package <CHART_PATH>    # packaging  (tgz file 생성)
+▒ helm repo index .            # index.yaml 파일 생성/수정
 ```
 
-* index.yaml 생성
+*  index.yaml 생성 - Url 지정하는 경우
 ```
 ▒ helm repo index --url "https://itnpeople.github.io/helmcharts" .
 ```
@@ -47,10 +49,9 @@ stable/gcloud-endpoints         0.1.2           1               DEPRECATED Devel
 *  생성한  index.yaml, tgz 파일 push
 ```
 ▒ git add .
-▒ git commit -m "first commit" 
+▒ git commit -m "feat : Helm Chart" 
 ▒ git push origin master
 ```
-
 
 ## Development
 
@@ -63,6 +64,13 @@ stable/gcloud-endpoints         0.1.2           1               DEPRECATED Devel
 ###  Yaml로 출력해보기
 ```
 ▒ helm template --debug release-devel  . --set service.internalPort=8080
+```
+
+### Template - default value
+
+```
+          persistentVolumeClaim:
+            claimName: {{ default "acornsoft-dashboard-metrics-scraper"  .Values.metricsScraper.persistence.existingClaim }}
 ```
 
 ### Accessing Files Inside Templates
@@ -90,9 +98,7 @@ data:
 {{ (.Files.Glob "files/conf/influxdb.conf").AsConfig | indent 2 }}
 ```
 
-### Dependency
-
-#### Sub-chart
+## Sub-chart
 > Chart.yaml(recommended, 또는 requirements.yaml) `dependencis` 속성에 지정된 dependency charts
 
 * list : https://helm.sh/docs/helm/helm_dependency_list/
@@ -105,7 +111,7 @@ data:
 ▒ helm dep up      # dependency sub-chart charts 업데이트
 ```
 
-#### Sub-chart 에 대한 속성 지정
+### Sub-chart 에 대한 속성 지정
 
 * `values.yaml` 파일에  **Hierarchy** 구조로 지정 가능
 
@@ -129,3 +135,11 @@ grafana:
     enabled: false
 ```
 
+## Hook : 릴리스 수명주기의 특정 지점에 동작 처리 (전처리, 후처리)
+> https://helm.sh/ko/docs/topics/charts_hooks/
+
+* pre-install, post-install
+* pre-delete, post-delete
+* pre-upgrade, post-upgrade
+* pre-rollback, post-rollback
+* test

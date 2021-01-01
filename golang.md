@@ -10,8 +10,35 @@
 * `go mod vendor` : go.mod의 Module을 이용하여 vendor Directory를 생성한다.
 * `go clean –modcache` : Module Cache ($GOPATH/pkg/mod)를 삭제한다.
 
+## DataType
+
+* Format
+
+```
+fmt.Printf("%.2f", float64(1.564)) // 1.56
+fmt.Printf("%.2f", float64(1.565)) // 1.57
+fmt.Printf("%d", int64(156))       // 156
+fmt.Printf("%d%%", int64(99))      // 99%
+
+```
+
 
 ## Libraries
+
+###  Format
+[github.com/dustin/go-humanize](https://github.com/dustin/go-humanize)
+
+```
+fmt.Printf("%s", humanize.Bytes(82854982))          // 83 MB
+fmt.Printf("%s", humanize.Time(someTimeInstance))   // 7 hours ago
+fmt.Printf("%s", humanize.Ordinal(2))               // 2nd
+fmt.Printf("%s", humanize.Ordinal(193))             // 193rd
+fmt.Printf("$%s", humanize.Comma(6582491))          // $6,582,491
+fmt.Printf("%f", 2.24)                              // 2.240000
+fmt.Printf("%s", humanize.Ftoa(2.24))               // 2.24
+fmt.Printf("%f", 2.0)                               // 2.000000
+fmt.Printf("%s", humanize.Ftoa(2.0))                // 2
+```
 
 ### Kubernetes go-client
 

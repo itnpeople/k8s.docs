@@ -1,5 +1,5 @@
 # kubectl 활용
-
+> [kubectl 치트 시트](https://kubernetes.io/ko/docs/reference/kubectl/cheatsheet/)
 
 ## Get
 
@@ -242,4 +242,11 @@ Unable to connect to the server: x509: certificate is valid for
 
 # restart the kublet 
 ▒ systemctl restart kubelet
+```
+
+## RBAC
+
+```
+# default namespace  pod list 권한 여부 확인
+$ kubectl auth can-i list pods --as=system:serviceaccount:default:default -n default
 ```
