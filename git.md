@@ -33,6 +33,26 @@
 ▒ git push origin :<branchname>
 ```
 
+## Tag 
+
+* 태깅
+```
+▒ git tag v0.2.8              # 현재 커밋에 태그
+▒ git tag v0.2.8 03c0beb080   # 커밋 지정 태그
+```
+
+* Push
+```
+▒ git push origin --tags      # 모든 태그 push
+▒ git push origin v0.2.8      # 태그 지정 push
+```
+
+* 태그 삭제
+```
+▒ git tag -d v0.2.8           # 삭제
+▒ git push origin :v0.2.8     # Push
+```
+
 ## Merge
 
 * master 로 머지
@@ -69,32 +89,20 @@
 ## 취소 (reset)
 
 * HEAD
-  * <commit id> : 특정 HEAD 위치 지정
-  * HEAD@{숫자} : 이전 {숫자} 만큼 이전 위치로 이동
+  * <commit id> : 특정 HEAD 위치 지정 (돌아가고 싶은 위치)
+  * HEAD@{숫자} : 이전 {숫자} 만큼 이전 위치
   * HEAD^ : 현재 바로 이전 위치로 이동
-
-* Reset 옵션
-  * --mixed : 워킹디렉토리와 Index 영역 모두 초기화, 변경 이력 및 내용 전부 삭제
-  * --hard (기본값) :  Index 영역은 초기화되고 워킹디렉토리는 변경되지 않음
-  * --soft : 변경 이력 삭제, 변경된 내용은 그대로 존재
-
 
 ### Commit 취소
 
-* commit을 취소하고 해당 파일들은 스테이징 영역에 보존
-```
-▒ git reset --soft <commit id>
-```
+* Reset 옵션
+  * --mixed (default): 변경 이력 삭제, 변경내역은 Unstage 상태
+  * --soft : 변경 이력 삭제, Stage 상태는 유지
+  * --hard : 돌아가려는 이력이후의 모든 내용을 삭제
 
-* commit을 취소하고 해당 파일들은 Unstaging
 ```
-▒ git reset --mixed <commit id>
-▒ git reset <commit id>
-```
-
-* commit을 취소하고 해당 파일들의 변경점 삭제
-```
-▒ git reset --hard <commit id>
+▒ git reset <HEAD>            # default --mixed
+▒ git reset <option> <HEAD>
 ```
 
 * 참조
@@ -104,17 +112,18 @@
 
 ### Push 취소
 
-* 되돌아간 commit 이후의 모든 commit 정보가 모두 삭제
-*  local의 내용을 remote에 강제로 덮어쓰기
+* 되돌아간 commit 이후의 모든 commit 정보 모두 삭제
+* local의 내용을 remote에 강제로 덮어쓰기
 
 ```
-▒ git reset <commit id>             # 또는 git reset HEAD@{숫자}
+▒ git reset <HEAD>
 ▒ git push origin +<branch name>
 ▒ git pull
 ```
 
+## 커밋
 
-## 커밋 합치기(squash)
+### 커밋 합치기(squash)
 
 1. HEAD(현재 최신위치) 에서 변경하고 싶은 commit 으로 rebase
 1. 합치고 싶은 커밋을 pick 을 `squash` 또는 `s` 로 변경 하고 저장 (:wq)
@@ -132,15 +141,8 @@ squash 30e0ccb Changed the tagline in the binary, too.
 ▒ git push origin +master
 ~~~
 
-## 커밋 메시지 수정
+### 커밋 메시지 수정(reword)
 
-* 최근 메시지
-
-```
-▒ git commit --amend
-```
-
-* 이전 메시지 
 1. HEAD(현재 최신위치) 에서 변경하고 싶은 commit 으로 rebase
 1. 수정하고 싶은 싶은 커밋을  `pick` 에서 `reword` 또는 `r` 로 변경 하고 저장 (:wq)
 1. 커밋메시지를 수정하고 저장 (:wq) 
@@ -154,6 +156,12 @@ reword 0c39034 Better README
 pick f7fde4a Change the commit message but push the same commit.
 
 ▒ git push origin +master
+```
+
+* 최근 메시지 수정
+
+```
+▒ git commit --amend
 ```
 
 
@@ -212,10 +220,7 @@ master 브랜치를 먼저 패치한 후 최신화 하고자 하는 브랜치로
 ```
 
 
-
-## 복구하기 (reflog)
-
-### 실수로 삭제한 branch 복구
+## 삭제된 Branch 복구하기
 
 * git reflog 확인
 ```
@@ -223,29 +228,52 @@ master 브랜치를 먼저 패치한 후 최신화 하고자 하는 브랜치로
 ```
 
 * HEAD@{숫자}로 이루어진 로그 중
-* 돌아가고 싶은 상태의 숫자를 확인하고 아래의 명령어에 입력
+* 돌아가고 싶은 상태의 숫자를 확인
+
 ```
 ▒ git checkout -b <삭제된 브랜치 이름> HEAD@{숫자}
 ```
 
-### 실수로 삭제한 Commit 복구하기
-
-* git reflog 확인
-```
-▒ git reflog
-```
-
-* commit id를 이용, 코드 복구
-
-```
-▒ git reset --hard commit_id
-```
 
 ## Git 그래프 보기
 ```
 ▒ git log --graph  --abbrev-commit --pretty=oneline --all
 ```
 
+## Subtree
+
+### `subtree` 구성
+
+```
+# dashboard 디렉토리에 repository branch 로 subtree 구성
+▒ git subtree add --squash --prefix=<sub dirctory> <https://github.com/xxxx/xxxxx.git> <branch name>
+```
+
+* subtree 대상 repository 의 커밋 history도 유지(default) 
+* 커밋 history를 하나로 합쳐 구성하고자 하면 `--squash` 옵션 사용
+
+
+* `subtree`로 구성된 소스 중 사용되지 않는 파일을 제외하도록 지정하고 소스 트리를 업데이트
+
+```
+# sparse checkout 옵션 지정
+▒ git config core.sparsecheckout true
+
+# 대상 파일 지정
+▒ cat <<EOF> .git/info/sparse-checkout
+/*
+!/dashboard
+/dashboard/Dockerfile
+/dashboard/gulpfile.babel.js
+!/src/app/metrics-scraper
+/src/app/metrics-scraper/hack/build.sh
+/src/app/metrics-scraper/pkg
+!/src/app/metrics-scraper/**/*_test.go
+EOF
+
+# 트리 업데이트
+▒ git read-tree HEAD -m -u
+```
 
 
 ## Pull Request
@@ -455,25 +483,6 @@ Host github.aconsoftlab
 * [Github 다수 계정을 위한 SSH Key 설정](https://mygumi.tistory.com/96)
 * [Mac 에서 ssh-agent 사용하기](https://blog.munilive.com/using-ssh-agent-on-mac-os/)
 
-## Tag 
-
-* 태깅
-```
-▒ git tag v0.2.8              # 현재 커밋에 태그
-▒ git tag v0.2.8 03c0beb080   # 커밋 지정 태그
-```
-
-* Push
-```
-▒ git push origin --tags      # 모든 태그 push
-▒ git push origin v0.2.8      # 태그 지정 push
-```
-
-* 태그 삭제
-```
-▒ git tag -d v0.2.8           # 삭제
-▒ git push origin :v0.2.8     # Push
-```
 
 ## Github Container Registry
 

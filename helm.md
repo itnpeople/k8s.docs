@@ -2,19 +2,17 @@
 
 * https://github.com/helm/charts
 
+## Install
 
-## Repository
+### Repository 를 통한 설치
 
-### Repository 추가
-
-* stable, incubator : https://hub.helm.sh/charts
+* Repository 추가
 ```
 ▒ helm repo add stable https://kubernetes-charts.storage.googleapis.com/
-▒ helm repo add incubator https://kubernetes-charts-incubator.storage.googleapis.com/
 ▒ helm repo update
 ```
 
-### Repoistory에서 chart 검색 및 설치
+* chart 검색 및 설치
 
 ```
 # 검색
@@ -32,8 +30,14 @@ stable/gcloud-endpoints         0.1.2           1               DEPRECATED Devel
 ▒ helm list
 ```
 
+### Chart 파일 (.tgz) 지정 설치
 
-### Github을 Repository로 구성하기
+```
+▒ helm install release-devel https://raw.githubusercontent.com/itnpeople/k8s.docs/master/charts/httpbin-devel.tgz
+```
+
+
+## Github을 Repository로 구성하기
 
 *  helm chart의 tgz 파일 생성 helm package
 ```
@@ -56,12 +60,14 @@ stable/gcloud-endpoints         0.1.2           1               DEPRECATED Devel
 ## Development
 
 ### Install 정상동작 여부 확인
+* `--dry-run`,  `--debug` 옵션 사용
 
 ```
 ▒ helm install --dry-run --debug release-devel . --set service.internalPort=8080
 ```
 
 ###  Yaml로 출력해보기
+
 ```
 ▒ helm template --debug release-devel  . --set service.internalPort=8080
 ```
