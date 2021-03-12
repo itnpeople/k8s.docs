@@ -135,19 +135,22 @@ done < "gcp.key"
 ▒ head -n 2 credentials | tail -n 1 | sed  's/aws_secret_access_key = //g'
 ~~~
 
-* 문자열 Replace
+* /etc/hosts 파일에서 `127.0.0.1` 로 시작 하는 행을 `127.0.0.1 localhost itnp.kr` 로 변경
+```
+▒ sed -i "s/127.0.0.1.*/127.0.0.1 localhost itnp.kr/g" /etc/hosts
+```
+
+* 문자열 `aaaa` 를  `bbbb` 로 replace
 
 ```
-# 문자열
 ▒ echo "aaaa.bbbb.cccc" | sed -e "s/aaaa/bbbb/g"
 
 bbbb.bbbb.cccc
 ```
 
-* 특수문자 Replace - "\"를 앞에 붙여줌
+* 큰따옴표를 제거 Replace - "\"를 앞에 붙여줌
 
 ```
-# 큰따옴표를 제거
 ▒ echo "\"cb-cluster-w-xzuz4\"" | sed -e "s/\"//g"
 
 cb-cluster-w-xzuz4

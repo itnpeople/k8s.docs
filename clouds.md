@@ -46,6 +46,12 @@ aws configure --profile seoul
 
 ```
 
+### Elastic Load Balancing 
+* Application Load Balancer : L7, HTTP, HTTPS, gRPC
+* Network Load Balancer : L4, TCP, UDP, TLS
+* Gateway Load Balancer : L3 + L4 LB, IP
+* Classic Load Balancer : L4/, TCP, SSL/TLS, HTTP, HTTPS
+* [제품 비교](https://aws.amazon.com/ko/elasticloadbalancing/features/#Product_comparisons)
 
 ## google
 

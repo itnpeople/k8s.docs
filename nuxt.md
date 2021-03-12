@@ -1,6 +1,8 @@
 # Nuxt
 
-## Front-End runtime environment (version 2.13+ 이후)
+## Config
+
+### Front-End runtime environment (version 2.13+ 이후)
 https://nuxtjs.org/blog/moving-from-nuxtjs-dotenv-to-runtime-config
 
 * version : 2.14.11
@@ -50,4 +52,23 @@ ENV KIALI_PORT 20001
 
 ENTRYPOINT [ "npm", "run", "run" ]
 EXPOSE 3000
+```
+
+
+## Integration
+
+### jQuery
+
+* package.json
+
+```
+    "devDependencies": {
+        "jquery": "3.4.1",
+    },
+```
+
+* *.vue
+
+```
+import "expose-loader?$!expose-loader?jQuery!jquery"
 ```

@@ -33,6 +33,13 @@
 ▒ git push origin :<branchname>
 ```
 
+* master 브랜치의 HEAD를  develop 브랜치 HEAD로 이동하고 리모트레파지토리에 적용
+```
+▒ git checkout develop
+▒ git branch -f master HEAD
+▒ git push origin +master
+```
+
 ## Tag 
 
 * 태깅
@@ -633,3 +640,5 @@ jobs:
 ```
 ![fork](https://img.shields.io/github/forks/:user/:repository?style=social)
 ```
+
+  
