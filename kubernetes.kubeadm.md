@@ -1,76 +1,57 @@
 # kubeadm
 
 
-## Provisioning
-
-* Token
-~~~
-# 현재 token 리스트
-▒  kubeadm token list 
-
-# control-plane endpoint 확인
-▒ END_POINT=$(echo "$(kubeadm config view | grep controlPlaneEndpoint)" | awk '{ print $2}')
-
-#  token 생성
-▒ TOKEN=$(kubeadm token create)
-▒ HASH=$(openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //')
-
-# join (on worker node)
-kubeadm join <END_POINT> --token <TOKEN> --discovery-token-ca-cert-hash sha256:<HASH>
-~~~
-
-## Join
+## Token
 
 * 현재 token 조회
 
 ```
 ▒ kubeadm token list 
-▒ kubeadm token list | awk 'FNR==2 {print $1}'
 ```
 
-### Worker node join command
+### Worker join command 
 
-* Token 생성 및 Join 문자열 출력
+* Token 재사용 - `system:bootstrappers:kubeadm:default-node-token` 토큰이 expires 되지 않았다면
+
+```
+▒ TOKEN="$(sudo kubeadm token list | awk 'FNR==2 {print $1}')"
+▒ HASH="$(openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //')"
+▒ END_POINT=$(echo "$(sudo kubeadm config view | grep controlPlaneEndpoint)" | awk '{ print $2}')
+
+▒ echo "sudo kubeadm join ${END_POINT} --token ${TOKEN} --discovery-token-ca-cert-hash sha256:${HASH}"
+```
+
+*  Token 신규 생성
 
 ```
 ▒ kubeadm token create --print-join-command
 ```
 
-*  Token 생성 및 Join 문자열 (수동)
+### Control-plane join command 
 
 ```
-▒ END_POINT=$(echo "$(kubeadm config view | grep controlPlaneEndpoint)" | awk '{ print $2}')
-▒ TOKEN=$(kubeadm token create)
-▒ HASH=$(openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //')
+# certificate-key generate
+▒ CERT_KEY=$(sudo kubeadm alpha certs certificate-key)
 
-▒ echo "kubeadm join ${END_POINT} --token ${TOKEN} --discovery-token-ca-cert-hash sha256:${HASH}"
+▒ TOKEN="$(sudo kubeadm token list | awk 'FNR==2 {print $1}')"
+▒ HASH="$(openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //')"
+▒ END_POINT=$(echo "$(sudo kubeadm config view | grep controlPlaneEndpoint)" | awk '{ print $2}')
+
+▒ echo "sudo kubeadm join ${END_POINT} --token ${TOKEN} --discovery-token-ca-cert-hash sha256:${HASH} --control-plane --certificate-key ${CERT_KEY}"
 ```
 
 
-### Certificate-key
-> certificate-key 발생시키고 kubeadm init 또는 join 시 사용
+* Token & cert-key 신규 생성
 
 ```
-▒ CERT_KEY=$(kubeadm alpha certs certificate-key)
-
-# master 초기화
-▒ kubeadm init --certificate-key $CERT_KEY
-
-# master (control plane) join
-▒ kubeadm join <master-ip>:6443 \
---token <token> \
---discovery-token-ca-cert-hash sha256:<token-ca-cert> \
---control-plane \
---certificate-key $CERT_KEY
-```
-
-* certificate-key 업로드
-
-```
+# certificate-key 업로드 
+# - 업로드된 certificate-key 는 2시간 동안 유지 후 삭제
 ▒ kubeadm init phase upload-certs --upload-certs
+
+CERT_KEY="<출력된 cert-key>"
+▒ sudo kubeadm token create --print-join-command --certificate-key ${CERT_KEY}
 ```
 
-* 업로드된 certificate-key 는 2시간 동안 유지 후 삭제된다.
 
 
 ## etcdctl

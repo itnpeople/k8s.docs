@@ -3,54 +3,41 @@
 > [httpbin](https://hub.docker.com/r/kennethreitz/httpbin) 에 필요 유틸 추가
 
 
-* docker 빌드
+## 빌드
+
 ~~~
 ▒ docker build -t honester/httpbin:latest .
 ▒ docker push honester/httpbin:latest
 ~~~
 
-* 실행(배포)
+## 배표
+
+### Docker
+
+* run
+
+~~~
+▒ docker run --rm -d -p 8080:80 --name httpbin honester/httpbin:latest
+
+# test
+▒ curl http://localhost:8080/ip
+~~~
+
+### Kubernetes
+
+* kubectl
+
 ~~~
 ▒ kubectl run httpbin --image=honester/httpbin --restart=Never
-# --dry-run -o yaml
+
+# dry-run
+▒ kubectl run httpbin --image=honester/httpbin --restart=Never --dry-run -o yaml
+
+# test
+▒ kubectl exec -it httpbin -- nslookup daum.net
 ~~~
 
-
-## 사용
-
-* curl
-~~~
-▒ do kubectl exec -it httpbin -c httpbin -- curl http://svc-hello.default:8080;
-▒ for i in {1..20}; do kubectl exec -it httpbin -c httpbin -- curl http://svc-hello.default:8080; sleep 0.1; done
-~~~
-
-* dig
-~~~
-▒ kubectl exec -it httpbin -- dig                                          # 환경설정 조회
-▒ kubectl exec -it httpbin -- dig itnp.kr                                  # 도메인 조회
-▒ kubectl exec -it httpbin -- dig productpage.default.svc.cluster.local
-▒ kubectl exec -it httpbin -- dig @8.8.8.8 google.com              # 특정 네임서버로 조회
-~~~
-
-* 리모트 도메인 포트 점검
-~~~
-▒ kubectl exec -it httpbin -- nslookup productpage.default.svc.cluster.local  # 도메인 점검
-▒ kubectl exec -it httpbin -- nmap 10.104.100.127 -p 2379                     # 리모트 포트 점검
-▒ kubectl exec -it httpbin -- nc -z daum.net  80                              # 리모트 포트 점검
-~~~
-
-* iperf3
-
-~~~
-# server
-▒ kubectl exec -it httpbin-master -- ipref3 -s
-
-# client (동시연결 30)
-▒ kubectl exec -it httpbin-worker-1 -- iperf3 -P 30 -c httpbin-master
-~~~
-
-
-## yaml 예
+* yaml
 
 ~~~
 apiVersion: v1
@@ -65,8 +52,6 @@ spec:
     imagePullPolicy: Always #IfNotPresent
     name: httpbin
 ~~~
-
-* master node / worker node에 지정 배포
 
 ~~~
 ▒ kubectl apply -f - <<EOF
@@ -85,21 +70,21 @@ spec:
     imagePullPolicy: IfNotPresent
     name: httpbin-node-master
   nodeSelector:
-    kubernetes.io/hostname: ip-10-1-3-113
+    kubernetes.io/hostname: master-1
 ---
 apiVersion: v1
 kind: Pod
 metadata:
-  name: httpbin-worker
+  name: httpbin-worker-1
   labels:
-    app: httpbin-worker
+    app: httpbin-worker-1
 spec:
   containers:
   - image: docker.io/honester/httpbin:latest
     imagePullPolicy: IfNotPresent
     name: httpbin-worker
   nodeSelector:
-    kubernetes.io/hostname: gcp-instance-1
+    kubernetes.io/hostname: worker-1
 EOF
 ---
 apiVersion: v1
@@ -116,11 +101,48 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: httpbin-worker
+  name: httpbin-worker-1
 spec:
   selector:
-    app: httpbin-worker
+    app: httpbin-worker-1
   ports:
     - protocol: TCP
       port: 80
 ~~~
+
+## Usage - kubectl
+
+* curl
+~~~
+▒ kubectl exec -it httpbin -c httpbin -- curl http://svc-hello.default:8080;
+
+# loop
+▒ for i in {1..20}; do kubectl exec -it httpbin -c httpbin -- curl http://svc-hello.default:8080; sleep 0.1; done
+~~~
+
+* dig
+~~~
+▒ kubectl exec -it httpbin -- dig                                          # 환경설정 조회
+▒ kubectl exec -it httpbin -- dig itnp.kr                                  # 도메인 조회
+▒ kubectl exec -it httpbin -- dig productpage.default.svc.cluster.local
+▒ kubectl exec -it httpbin -- dig @8.8.8.8 google.com                      # 특정 네임서버로 조회
+~~~
+
+* 리모트 도메인 포트 점검
+~~~
+▒ kubectl exec -it httpbin -- nslookup productpage.default.svc.cluster.local  # 도메인 점검
+▒ kubectl exec -it httpbin -- nmap 10.104.100.127 -p 2379                     # 리모트 포트 점검
+▒ kubectl exec -it httpbin -- nc -z daum.net  80                              # 리모트 포트 점검
+~~~
+
+* iperf3
+
+~~~
+# server
+▒ kubectl exec -it httpbin-master-1 -- ipref3 -s
+
+# client (동시연결 30)
+▒ kubectl exec -it httpbin-worker-1 -- iperf3 -P 30 -c httpbin-master
+~~~
+
+

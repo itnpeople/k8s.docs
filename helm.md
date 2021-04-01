@@ -42,11 +42,13 @@ stable/gcloud-endpoints         0.1.2           1               DEPRECATED Devel
 *  helm chart의 tgz 파일 생성 helm package
 ```
 ▒ helm package <CHART_PATH>    # packaging  (tgz file 생성)
-▒ helm repo index .            # index.yaml 파일 생성/수정
 ```
 
-*  index.yaml 생성 - Url 지정하는 경우
+*  index.yaml 생성/ 수정 
 ```
+▒ helm repo index .
+
+# Url 지정하는 경우
 ▒ helm repo index --url "https://itnpeople.github.io/helmcharts" .
 ```
 

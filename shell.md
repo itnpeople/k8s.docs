@@ -35,9 +35,10 @@
 ```
 # 2행 1번째 컬럼 값 
 ▒ kubeadm token list | awk 'FNR==2 {print $1}'
+
+# output 라인 갯수
+▒ kubectl get nodes | awk 'END { print NR }'
 ```
-
-
 
 
 ## 커널
@@ -62,7 +63,7 @@ PrivateKey = $(sudo wg genkey)" | sudo tee /etc/wireguard/wg0.conf
 
 * cat 으로 파일 생성 sudo
 ~~~
-▒  sudo bash -c 'cat > /etc/docker/daemon.json <<EOF
+▒ sudo bash -c 'cat > /etc/docker/daemon.json <<EOF
 {
   "exec-opts": ["native.cgroupdriver=systemd"],
   "log-driver": "json-file",
@@ -73,6 +74,14 @@ PrivateKey = $(sudo wg genkey)" | sudo tee /etc/wireguard/wg0.conf
 }
 EOF'
 ~~~
+
+* 작은 따옴표안에서 작은 따옴표 문자열 사용 : `\047`
+~~~
+▒ echo -e 'kubectl get nodes --no-headers | awk \047END { print NR }\047'
+
+kubectl get nodes --no-headers | awk 'END { print NR }'
+~~~
+
 
 * cat 으로 파일 생성 sudo
 ~~~
@@ -87,6 +96,7 @@ EOF'
 }
 EOF
 ~~~
+
 
 ### 파일 LF(line feed) 문자열 변환
 
