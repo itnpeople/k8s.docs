@@ -64,4 +64,10 @@ aws configure --profile seoul
 
 # service acoount 확인
 ▒ gcloud iam service-accounts list
+
+# region 목록 (https://cloud.google.com/compute/docs/regions-zones?hl=ko)
+▒ gcloud compute regions list
+
+# region 정보
+▒ gcloud compute regions describe us-central1
 ```

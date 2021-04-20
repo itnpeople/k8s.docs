@@ -3,7 +3,7 @@
 
 ## Kubernetes
 * [kubectl](./kubectl.md)
-* [kubernetes api](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.17/)       
+* [client-go](./kubernetes.client-go.md)
 * [kubeadm](./kubernetes.kubeadm.md)
 * [network](./kubernetes.network.md)
 * [security](./kubernetes.security.md)

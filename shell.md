@@ -165,3 +165,71 @@ bbbb.bbbb.cccc
 
 cb-cluster-w-xzuz4
 ```
+
+## systemd
+> https://fmd1225.tistory.com/93
+
+### servaice 파일 
+* Unit, Service, Install 섹션으로 구성
+* ExecStart : 실행 command
+* After : 이전에 실행할 서비스들, 나열된 서비스 이후에 실행 하겠다는 의미
+* Before: 이후에 실행할 서비스들, 나열된 서비스 이전에 실행 하겠다는 의미
+
+```
+▒ sudo bash -c 'cat > /lib/systemd/system/ladybug-bootstrap.service <<EOF
+[Unit]
+Description=Ladybug bootstrap script
+After=multi-user.target
+StartLimitIntervalSec=60
+StartLimitBurst=3
+[Service]
+ExecStart=/lib/systemd/system/ladybug-bootstrap
+Restart=on-failure
+RestartSec=10s
+[Install]
+WantedBy=kubelet.service
+EOF'
+
+# reload 및 reboot 시 실행하도록 지정
+▒ sudo systemctl daemon-reload
+▒ sudo systemctl enable ladybug-bootstrap
+```
+
+
+* 조회
+
+```
+# unit 파일 리스트
+▒ systemctl list-unit-files
+
+# unit 파일 보기
+▒ systemctl show kubelet.service
+```
+
+## systemctl
+
+```
+# 실패 서비스 조회
+▒ sudo systemctl --failed
+
+# 동작중 서비스
+▒ systemctl
+
+# 의존관계 조회
+▒ systemctl list-dependencies
+▒ systemctl list-dependencies kubelet.service
+
+# critical-chain
+▒ systemd-analyze critical-chain
+▒ systemd-analyze critical-chain kubelet.service
+
+
+# 부팅과정에 각 서비스별 초기화하는데 걸린 시간
+▒ systemd-analyze blame
+
+# 부팅과정 svg 파일로 저장
+▒ systemd-analyze plot > order.svg
+
+# targe 조회
+▒ systemctl list-units --type target --all
+```
