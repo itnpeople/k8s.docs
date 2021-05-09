@@ -63,3 +63,40 @@ CERT_KEY="<출력된 cert-key>"
 # etcd 에서 노드 제
 ▒ etcdctl member remove <id>
 ```
+
+
+## Use Case
+
+### Simple 
+* 192.168.77.71 : public ip
+* 10.30.20.101 : eth0
+
+```
+▒ cat << EOF > kubeadm-config.yaml
+apiVersion: kubeadm.k8s.io/v1beta2
+kind: ClusterConfiguration
+controlPlaneEndpoint: 192.168.77.71:6443
+dns:
+  type: CoreDNS
+apiServer:
+  extraArgs:
+    advertise-address: 10.30.20.101
+    authorization-mode: Node,RBAC
+  certSANs:
+  - 10.30.20.101
+  - localhost
+  - 127.0.0.1
+etcd:
+  local:
+    dataDir: /var/lib/etcd
+networking:
+  dnsDomain: cluster.local
+  podSubnet: 10.244.0.0/16
+  serviceSubnet: 10.96.0.0/12
+controllerManager: {}
+scheduler: {}
+EOF
+
+▒ sudo kubeadm init --v=5 --upload-certs --config kubeadm-config.yaml
+```
+

@@ -295,7 +295,7 @@ EOF
 ▒ git remote -v
 ```
 
-* 리모트 최신소스를 forked repositry master branch에 동기화 (rebase)
+* 리모트 최신소스를 forked repository master branch에 동기화 (rebase)
 ```
 ▒ git checkout master
 ▒ git fetch upstream
@@ -518,9 +518,10 @@ ghcr.io/<GITHUB_ID>/<IMAGE_NAME>:<TAG>
 
 ## Github Workflow
 
-### Github action trigger workflow
+### Trigger workflow
 
-* workflow 실행은 Repository 이벤트 발생시 실행되지만 원하는 workflow yaml 파일에 `workflow_dispatch`를 선언해주면 "Repository > Actions" 화면에서 Workflow 선택 시  "Run workflow" 버튼이 활성화되어 메뉴얼로 Workflow 를 실행할 수 있다.
+* "Repository > Actions" 화면에서 메뉴얼로 Workflow 를 실행 가능 - "Run workflow" 버튼이 활성화됨
+* workflow 실행은 Repository 이벤트 발생시 실행되지만 원하는 workflow yaml 파일에 `workflow_dispatch`를 선언
 
 ```
 on: 
@@ -547,7 +548,26 @@ jobs:
         echo "Tags: ${{ github.event.inputs.tags }}" 
 ```
 
-### `docker/build-push-action@v2` 활용 시 서브 디렉토리에 있는 Dockerfile 을 빌드
+### docker/login-action@v1
+
+```
+- name: Login GHCR
+  uses: docker/login-action@v1 
+  with:
+    registry: ghcr.io
+    username: ${{ github.repository_owner }}
+    password: ${{ secrets.GHCR_TOKEN  }}
+```
+* secrets 생성 방법
+  * Action을 실행할 Repository  이동
+  * Setting > Secrets  > New repository secret
+  * 토큰값 입력, 토큰은 앞서 입력한 "Github 프로필 페이지 > Settings > Developer settings > Personal access tokens" 에서 generate된 문자열
+
+
+
+### docker/build-push-action@v2
+
+* 서브 디렉토리에 있는 Dockerfile 을 빌드하는 방법
 
 아래와 같이 step.with 에 `context`, `file` 값을 지정해준다.
 

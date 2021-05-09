@@ -17,3 +17,9 @@
 ▒ kubectl apply -f https://k8s.io/examples/admin/dns/dnsutils.yaml
 ▒ kubectl exec -it -n default dnsutils -- nslookup kubernetes.default
 ```
+
+## Network-CNI
+
+```
+▒ kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+```

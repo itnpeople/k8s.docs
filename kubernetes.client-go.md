@@ -27,4 +27,5 @@ export KUBERNETES_SERVICE_HOST=$(kubectl config view --raw=true -o jsonpath='{.c
 export KUBERNETES_SERVICE_PORT=$(kubectl config view --raw=true -o jsonpath='{.clusters[0].cluster.server}' |  awk -F/ '{print $3}' |  awk -F: '{print $2}')
 ```
 
+* [Kubernetes 의 Downward API](https://sgc109.github.io/2021/01/17/k8s-downward-api/)
 
