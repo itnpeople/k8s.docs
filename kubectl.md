@@ -1,20 +1,26 @@
 # kubectl 활용
 > [kubectl 치트 시트](https://kubernetes.io/ko/docs/reference/kubectl/cheatsheet/)
 
-## Get
+## Get (JSONPATH)
 
 * 레이블
 ~~~
-▒ kubectl get pod -l app=hello -o jsonpath={.items..metadata.name}
+▒ kubectl get pod -l app=hello
+▒ kubectl get pod -l app.kubernetes.io/name=backend
 ~~~
 
-* Jsonpath
+* Array
 
 ~~~
-▒ kubectl get pod -l app=hello -o jsonpath={.items..metadata.name}
-▒ kubectl get pod -l app.kubernetes.io/name=backend -o jsonpath={.items..metadata.name}  # simple
-▒ kubectl get svc/frontend -o jsonpath='{.spec.ports[?(@.name=="http")].nodePort}'       # 조건 (nodeport 조회)
+▒ kubectl get pod busybox -o jsonpath={.items..metadata.name}
 ~~~
+
+* array 필터링 `[?(@.name=="http")]`
+
+~~~
+▒ kubectl get svc/frontend -o jsonpath='{.spec.ports[?(@.name=="http")].nodePort}'
+~~~
+
 
 ## Delete
 
