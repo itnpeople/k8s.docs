@@ -12,10 +12,11 @@
 
 ## Branch
 
-* branch 이동
+* branch 체크아웃(이동)
 
 ```
-▒ git checkout <branchname>
+▒ git checkout <branchname>                 # local 브랜치
+▒ git checkout --track origin/<branchname>  # remote 브랜치
 ```
 
 * branch  만들기
@@ -31,6 +32,8 @@
 ▒ git checkout master
 ▒ git branch -D <branchname>
 ▒ git push origin :<branchname>
+
+▒ git push origin --delete release-0.3.3  # remote 브랜치 삭제
 ```
 
 * master 브랜치의 HEAD를  develop 브랜치 HEAD로 이동하고 리모트레파지토리에 적용
@@ -253,7 +256,8 @@ master 브랜치를 먼저 패치한 후 최신화 하고자 하는 브랜치로
 
 ```
 # dashboard 디렉토리에 repository branch 로 subtree 구성
-▒ git subtree add --squash --prefix=<sub dirctory> <https://github.com/xxxx/xxxxx.git> <branch name>
+# git subtree add --squash --prefix=<sub dirctory> <https://github.com/xxxx/xxxxx.git> <branch name>
+▒ git subtree add --squash --prefix=src/app/metrics-scraper https://github.com/kubernetes-sigs/dashboard-metrics-scraper.git master
 ```
 
 * subtree 대상 repository 의 커밋 history도 유지(default) 
